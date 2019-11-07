@@ -2,7 +2,6 @@ import os
 import glob
 import filecmp
 import json
-from pathlib import Path
 from shutil import copy2
 whitelist = open('whitelist.txt').read()
 fileIndex = {}
