@@ -1,10 +1,10 @@
-Requirements:
+ # Requirements
 
 -Python 3.6
 
--7z (Add the 7z folder to your windows enviroment path variable. File explorer crashes when extracting the descriptor.mod)
+-Add the 7z folder to your windows enviroment path (File explorer crashes when extracting the descriptor.mod, so i used 7z instead)
 
-Usage: 
+# Usage
 
 -Place all scripts in C:\Users\<your username>\Documents\Paradox Interactive\Stellaris\
 
@@ -26,40 +26,14 @@ Usage:
 
 -Merge the conflicting files 
 
-  >Notepad++ w/ the compare plugin probably the quickest and simplest, although it does occasionaly get confused with the more complex files
+  >Notepad++ w/ the compare plugin is probably the quickest and simplest, although it does occasionaly get confused with the more complex files
 
 
+# Other scripts
 
-GenerateModList.py: 
-
--Generates a list of installed mods 
-
--outputs to list.txt 
-
-
-Extractor.py:
-
--Reads from whitelist.txt 
-
--Extracts/Copies files from the steamworkshop folder into the local mod folder 
-
-
-Installer.py: 
-
--Reads from whitelist.txt 
-
--Copies mods into /Mod/! Modpack/ 
-
--Conflicts are copied into /!Conflicts!/ as <Filename> + <Modname>
-  
--Will skip files that have the same contents compared to the files already present in /! Modpack/
-
--Generated a list of copied files under /mod/!conflicts!/filesList.txt, useful for determining which file to overwrite
-  
-  
 Uninstaller.py:
 
--Remove all files from the selected mod
+-Remove all non modified files of a selected mod from the modpack
 
 -Prints conflicts to the console
 
