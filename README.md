@@ -10,7 +10,9 @@
 
 -Edit generateModList.py and extractor.py, change STEAM_PATH to your steam installation directory
 
--Run generateModList.py 
+-Run generateModList.py
+
+  >This will create list.txt which contains a lost of all installed mods and an empty whitelist.txt 
 
   >Mods which are not updated for 2.4+ will be listed according to their zip file name, which may be abbreviated
   
@@ -18,16 +20,19 @@
 
 -Run extractor.py 
 
+  >This will extract all whitelisted mods into your local mod folder
+  
+  >Depending on the mods, this may use up several GB's worth of space
+
 -Run installer.py
 
--Output is in mod/! Modpack/
+  >The merged pack is in mod/! Modpack/
 
--Conflicts are in mod/!conflicts!/
+  >Conflicts are in mod/!conflicts!/
 
 -Merge the conflicting files 
 
   >Notepad++ w/ the compare plugin is probably the quickest and simplest, although it does occasionaly get confused with the more complex files
-
 
 # Other scripts
 
