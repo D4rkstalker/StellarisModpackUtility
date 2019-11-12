@@ -4,9 +4,13 @@
 
 -Add the 7z folder to your windows enviroment path (File explorer crashes when extracting the descriptor.mod, so i used 7z instead)
   >In Search, search for and then select: System (Control Panel)
+  
   >Click the Advanced system settings link.
+  
   >Click Environment Variables. In the section System Variables, find the PATH environment variable and select it. Click Edit. If the PATH environment variable does not exist, click New.
+  
   >In the Edit System Variable (or New System Variable) window, click new and add the 7z installation directory. Click OK. Close all remaining windows by clicking OK.
+  
   >Reopen any command prompt windows.
 
 # Usage
@@ -18,7 +22,6 @@
 -Run generateModList.py
 
   >This will create list.txt which contains a lost of all installed mods and an empty whitelist.txt 
-
   >Mods which are not updated for 2.4+ will be listed according to their zip file name, which may be abbreviated
   
 -Copy the mods that you want to merge from list.txt to whitelist.txt
