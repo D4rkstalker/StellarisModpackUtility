@@ -48,6 +48,7 @@ Uninstaller.py:
 
 -Remove all non modified files of a selected mod from the modpack
   >Edit the script and change the mod name to the mod to be removed
+
 -Prints conflicts to the console
 
 
