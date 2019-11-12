@@ -3,6 +3,11 @@
 -Python 3.6
 
 -Add the 7z folder to your windows enviroment path (File explorer crashes when extracting the descriptor.mod, so i used 7z instead)
+  >In Search, search for and then select: System (Control Panel)
+  >Click the Advanced system settings link.
+  >Click Environment Variables. In the section System Variables, find the PATH environment variable and select it. Click Edit. If the PATH environment variable does not exist, click New.
+  >In the Edit System Variable (or New System Variable) window, click new and add the 7z installation directory. Click OK. Close all remaining windows by clicking OK.
+  >Reopen any command prompt windows.
 
 # Usage
 
@@ -19,15 +24,12 @@
 -Copy the mods that you want to merge from list.txt to whitelist.txt
 
 -Run extractor.py 
-
-  >This will extract all whitelisted mods into your local mod folder
-  
+  >This will extract all whitelisted mods into your local mod folder 
   >Depending on the mods, this may use up several GB's worth of space
 
 -Run installer.py
 
   >The merged pack is in mod/! Modpack/
-
   >Conflicts are in mod/!conflicts!/
 
 -Merge the conflicting files 
@@ -39,7 +41,7 @@
 Uninstaller.py:
 
 -Remove all non modified files of a selected mod from the modpack
-
+  >Edit the script and change the mod name to the mod to be removed
 -Prints conflicts to the console
 
 
