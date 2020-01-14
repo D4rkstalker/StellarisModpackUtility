@@ -41,7 +41,12 @@ for f in files:
 
 #For 2.4+
 for d in descriptors: 
-    descriptor = open(d,"r").read()
+    try:
+        descriptor = open(d,"r").read()
+    except Exception as e: 
+        print(d)
+        print(e, " Using utf-8 charset")
+        descriptor = open(f,"r", encoding="utf-8").read()
     for entry in whiteList:
         if "name=\"" + entry + "\"" in descriptor:
             modDir = "\\".join(d.split("\\")[:-1])

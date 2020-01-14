@@ -26,7 +26,8 @@ def setUpDescriptor(file_list):
 
 whitelist = open('list.txt').read()
 whitelist = whitelist.split("\n")
-for entry in whitelist: 
+for item in whitelist: 
+    entry = ''.join(e for e in item if e.isalnum())
     descriptorList = glob.glob("mod\\"+entry.replace("\n","")+"\\*.mod")
     setUpDescriptor(descriptorList)
 

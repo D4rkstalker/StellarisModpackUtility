@@ -3,7 +3,7 @@ import glob
 from shutil import copy2
 import filecmp
 
-MOD_TO_REMOVE = ""
+MOD_TO_REMOVE = "BNPWarframePortraitsMachines"
 
 modFiles = glob.glob('mod/'+MOD_TO_REMOVE +'/**',recursive=True)
 conflictingFiles = []

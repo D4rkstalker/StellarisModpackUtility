@@ -29,7 +29,7 @@ for f in files:
 for f in descriptors: 
     #print(f)
     
-    descriptor = open(f,"r")
+    descriptor = open(f,"r", encoding="utf-8")
     contents = descriptor.readlines()
     for line in contents :
         if "name" in line: 
