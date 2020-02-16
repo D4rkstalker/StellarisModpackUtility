@@ -20,10 +20,13 @@ settingPath = [
 ]
 settingPath = [s for s in settingPath if os.path.isfile(os.path.join(s, mods_registry))]
 
-import winreg
-SteamPath = r"Software\Valve\Steam" #SteamPath
-# "D:\\Program Files (x86)\\Steam"   #Your steam installation path goes here
-SteamPath = winreg.QueryValueEx(winreg.OpenKey(winreg.ConnectRegistry(None, winreg.HKEY_CURRENT_USER), SteamPath), "SteamPath")[0]
+if 'posix' in sys.builtin_module_names:
+	SteamPath = "~/.steam"
+else:
+	import winreg
+	SteamPath = r"Software\Valve\Steam" #SteamPath
+	# "D:\\Program Files (x86)\\Steam"   #Your steam installation path goes here
+	SteamPath = winreg.QueryValueEx(winreg.OpenKey(winreg.ConnectRegistry(None, winreg.HKEY_CURRENT_USER), SteamPath), "SteamPath")[0]
 
 def mBox(type, text):
 	tk.Tk().withdraw()
@@ -78,19 +81,13 @@ def genModList(SteamPath):
 
 	def _getFiles():
 		"This will return absolute paths"
-		# file_list = os.path.join(SteamPath, "steamapps\\workshop\\content\\281990\\**")
 		file_list = SteamPath / "steamapps\\workshop\\content\\281990\\"
-		file_list = sorted(file_list.glob("*")) #For 2.4 +
-		# zip_list = []
-		# zip_list = sorted(file_list.glob("**/*.zip")) #For 2.3 -
-		# descriptor_list = sorted(file_list.glob("**/*.mod")) #For 2.4 +
-		# return zip_list, descriptor_list
+		file_list = sorted(file_list.glob("*"))
 		return file_list
 
 	files = _getFiles()
 	# print(type(files),len(files),*files, sep="\n")
-
-	outlist = open('list.txt','w+')
+	outlist = open(os.path.join(settingPath, 'list.txt'),'w+')
 	out = []
 		
 	for f in files:
@@ -100,7 +97,7 @@ def genModList(SteamPath):
 			print(f, "no descriptor.mod found")
 			file = next(f.glob("*.zip"), '')
 			if file and file.exists():
-				out.append(file.name)
+				out.append(file.name.replace(".zip",""))
 			else:
 				f = str(f)
 				print("Error: no valid mod file found!", f)
@@ -115,15 +112,16 @@ def genModList(SteamPath):
 				name = name and name.group(1) or None
 				if name:
 					print(name, file.name)
-					out.append(name)
+					out.append(name.replace(".mod",""))
 					break
 
 	if len(out):
 		# out.sort()
 		for item in out:
-			outlist.write((item.replace(".mod","").replace(".zip","") + '\n'))
+			outlist.write("%s\n" % item)
+		# outlist.write(json.dumps(out))
 		outlist.close()
-		whitelist = open('whitelist.txt','w+')
+		whitelist = open(os.path.join(settingPath, 'whitelist.txt'),'w+')
 
 
 if len(settingPath) > 0:
