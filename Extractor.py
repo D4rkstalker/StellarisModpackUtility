@@ -1,4 +1,3 @@
-#PATH = D:\Program Files (x86)\Steam\steamapps\workshop\content\281990
 import os, sys, re
 # import glob
 import subprocess
@@ -9,12 +8,11 @@ if 'posix' in sys.builtin_module_names:
 	STEAM_PATH = "~/.steam"
 else:
 	import winreg
-	STEAM_PATH = r"Software\Valve\Steam" #STEAM_PATH
-	# "D:\\Program Files (x86)\\Steam"   #Your steam installation path goes here
+	STEAM_PATH = r"Software\Valve\Steam"
 	STEAM_PATH = winreg.QueryValueEx(winreg.OpenKey(winreg.ConnectRegistry(None, winreg.HKEY_CURRENT_USER), STEAM_PATH), "SteamPath")[0]
 
 if not STEAM_PATH:
-   STEAM_PATH = "C:\\Program Files (x86)\\Steam" #Your steam installation path goes here
+   STEAM_PATH = "C:\\Program Files (x86)\\Steam" # Your Steam installation path goes here
 
 
 def getWorkshopPath(SteamPath):
@@ -32,11 +30,10 @@ def getWorkshopPath(SteamPath):
 				for l in workshop:
 					l = re.search(r'\s*"1"\s*\"([^"]+)\"$', l)
 					# if '	"1"		' in l:
+					l = l and l.group(1) or None
 					if l:
-						workshop = l and l.group(1) or None
-						if workshop:
-							workshop = Path(workshop) / "steamapps" / "workshop"
-							break
+						workshop = Path(l) / "steamapps" / "workshop"
+						break
 				if type(workshop) is not list and workshop.is_dir():
 					SteamPath = workshop
 	else:
@@ -46,10 +43,8 @@ def getWorkshopPath(SteamPath):
 
 def copyDirectory(src, dest):
 	try:
-		shutil.copytree(src, dest)
-	except shutil.Error as e:
-		print('Directory not copied. Error: %s' % e)
-	except OSError as e:
+		shutil.copytree(src, dest, ignore=shutil.ignore_patterns('*.zip'))
+	except (shutil.Error, OSError) as e:
 		print('Directory not copied. Error: %s' % e)
 
 def getFiles(workshop): 
@@ -71,10 +66,7 @@ if not STEAM_PATH:
 
 whiteList = open('whitelist.txt','r').read()
 whiteList = whiteList.split("\n")
-
-# print(type(whiteList),len(whiteList), whiteList)
 files, descriptors = getFiles(STEAM_PATH)
-# print(type(descriptors),len(descriptors), descriptors)
 #For 2.4+
 for d in descriptors: 
 	try:
@@ -90,7 +82,6 @@ for d in descriptors:
 			print("Copying", entry)
 			whiteList.remove(entry)
 			copyDirectory(modDir,outDir)
-
 #For 2.3-
 for f in files: 
 	for entry in whiteList:

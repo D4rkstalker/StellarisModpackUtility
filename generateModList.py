@@ -9,8 +9,8 @@ from tkinter import messagebox
 import traceback
 
 mods_registry =  'mods_registry.json'
-modList = [] # the modId order (game, which is in reverse to hashList)
-# check Stellaris settings location
+modList = [] # The modId order (game, which is in reverse to hashList)
+# Check Stellaris settings location
 settingPath = [
 	".", "..",
 	os.path.join(os.path.expanduser('~'), 'Documents', 'Paradox Interactive',
@@ -25,8 +25,10 @@ if 'posix' in sys.builtin_module_names:
 else:
 	import winreg
 	SteamPath = r"Software\Valve\Steam" #SteamPath
-	# "D:\\Program Files (x86)\\Steam"   #Your steam installation path goes here
 	SteamPath = winreg.QueryValueEx(winreg.OpenKey(winreg.ConnectRegistry(None, winreg.HKEY_CURRENT_USER), SteamPath), "SteamPath")[0]
+
+if not SteamPath:
+   SteamPath = "C:\\Program Files (x86)\\Steam" # Your Steam installation path goes here
 
 def mBox(type, text):
 	tk.Tk().withdraw()
@@ -75,11 +77,10 @@ def getWorkshopPath(SteamPath):
 				for l in workshop:
 					l = re.search(r'\s*"1"\s*\"([^"]+)\"$', l)
 					# if '	"1"		' in l:
+					l = l and l.group(1) or None
 					if l:
-						workshop = l and l.group(1) or None
-						if workshop:
-							workshop = Path(workshop) / "steamapps" / "workshop"
-							break
+						workshop = Path(l) / "steamapps" / "workshop"
+						break
 				if type(workshop) is not list and workshop.is_dir():
 					SteamPath = workshop
 	else:
@@ -91,7 +92,7 @@ def genModList(SteamPath):
 
 	SteamPath = getWorkshopPath(SteamPath)
 	if not SteamPath:
-		return abort('No path found!')
+		return abort('No Steam workshop path found!')
 
 	def _getFiles(workshop):
 		"This will return absolute paths"
