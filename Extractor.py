@@ -17,23 +17,31 @@ if not STEAM_PATH:
    STEAM_PATH = "C:\\Program Files (x86)\\Steam" #Your steam installation path goes here
 
 
-def getWorkshopPath(workshop):
-	workshop = Path(workshop)
-	if not workshop.is_dir():
+def getWorkshopPath(SteamPath):
+	SteamPath = Path(SteamPath) / "steamapps"
+	if not SteamPath.is_dir():
 		return
-	with open(str(workshop / "steamapps" / "libraryfolders.vdf"), "r", encoding="utf-8") as workshop:
-		workshop = workshop.readlines()
-		for l in workshop:
-			if re.search(r'^\s*\"1\"\s*', l):
-				l = re.search(r'\s*"1"\s*\"([^"]+)\"$', l)
-				workshop = l and l.group(1) or None
-				if workshop:
-					break
 
-		if type(workshop) is not list:
-			workshop = Path(workshop)
-			if workshop.is_dir():
-				return workshop
+	workshop = SteamPath / "workshop"
+
+	if not workshop.is_dir():
+		workshop = SteamPath / "libraryfolders.vdf"
+		if workshop.is_file():
+			with open(str(workshop), "r", encoding="utf-8") as workshop:
+				workshop = workshop.readlines()
+				for l in workshop:
+					l = re.search(r'\s*"1"\s*\"([^"]+)\"$', l)
+					# if '	"1"		' in l:
+					if l:
+						workshop = l and l.group(1) or None
+						if workshop:
+							workshop = Path(workshop) / "steamapps" / "workshop"
+							break
+				if type(workshop) is not list and workshop.is_dir():
+					SteamPath = workshop
+	else:
+		SteamPath = workshop
+	return SteamPath
 
 
 def copyDirectory(src, dest):
@@ -44,8 +52,11 @@ def copyDirectory(src, dest):
 	except OSError as e:
 		print('Directory not copied. Error: %s' % e)
 
-def getFiles(directory): 
-	directory = Path(directory) / "steamapps\\workshop\\content\\281990"
+def getFiles(workshop): 
+	"This will return absolute paths"
+	if not workshop.is_dir():
+		return
+	directory = workshop / "content" / "281990"
 	file_list = sorted(directory.glob("*/*.zip"))
 	descriptor_list = sorted(directory.glob("*/descriptor.mod"))
 	return file_list,descriptor_list
@@ -55,7 +66,10 @@ def unzip(src,dest):
 
 STEAM_PATH = getWorkshopPath(STEAM_PATH)
 
-whiteList = open('whiteList.txt','r').read()
+if not STEAM_PATH:
+	raise ValueError('No Steam workshop path found!')
+
+whiteList = open('whitelist.txt','r').read()
 whiteList = whiteList.split("\n")
 
 # print(type(whiteList),len(whiteList), whiteList)
