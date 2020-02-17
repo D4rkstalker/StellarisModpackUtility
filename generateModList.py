@@ -11,24 +11,20 @@ import traceback
 mods_registry =  'mods_registry.json'
 modList = [] # The modId order (game, which is in reverse to hashList)
 # Check Stellaris settings location
-settingPath = [
-	".", "..",
-	os.path.join(os.path.expanduser('~'), 'Documents', 'Paradox Interactive',
-				 'Stellaris'),
-	os.path.join(os.path.expanduser('~'), '.local', 'share',
-				 'Paradox Interactive', 'Stellaris')
-]
+settingPath = [	".", "..",
+	os.path.join(os.path.expanduser('~'), 'Documents', 'Paradox Interactive', 'Stellaris'),
+	os.path.join(os.path.expanduser('~'), '.local', 'share', 'Paradox Interactive', 'Stellaris')]
 settingPath = [s for s in settingPath if os.path.isfile(os.path.join(s, mods_registry))]
 
 if 'posix' in sys.builtin_module_names:
-	SteamPath = "~/.steam"
+	STEAM_PATH = "~/.steam"
 else:
 	import winreg
-	SteamPath = r"Software\Valve\Steam" #SteamPath
-	SteamPath = winreg.QueryValueEx(winreg.OpenKey(winreg.ConnectRegistry(None, winreg.HKEY_CURRENT_USER), SteamPath), "SteamPath")[0]
+	STEAM_PATH = r"Software\Valve\Steam"
+	STEAM_PATH = winreg.QueryValueEx(winreg.OpenKey(winreg.ConnectRegistry(None, winreg.HKEY_CURRENT_USER), STEAM_PATH), "SteamPath")[0]
 
-if not SteamPath:
-   SteamPath = "C:\\Program Files (x86)\\Steam" # Your Steam installation path goes here
+if not STEAM_PATH:
+   STEAM_PATH = "C:\\Program Files (x86)\\Steam" # Your Steam installation path goes here
 
 def mBox(type, text):
 	tk.Tk().withdraw()
@@ -42,11 +38,11 @@ def abort(message):
 def errorMesssage(error):
 	error_class = e.__class__.__name__  # Get error type
 	detail = e.args[0]  # Get details
-	_, _, tb = sys.exc_info()  # Get Call Stack
+	_, _, tb = sys.exc_info()   # Get Call Stack
 	lastCallStack = traceback.extract_tb(tb)[-1]  # Get the last call from Call Stack
-	fileName = lastCallStack[0]  # Get the name of the file that happened
+	fileName = lastCallStack[0] # Get the name of the file that happened
 	lineNum = lastCallStack[1]  # Get the occurrence of the line number
-	funcName = lastCallStack[2]  # Get the name of the function that happened
+	funcName = lastCallStack[2] # Get the name of the function that happened
 	return "File \"{}\", line {}, in {}: [{}] {}".format(
 		fileName, lineNum, funcName, error_class, detail)
 
@@ -54,25 +50,23 @@ def errorMesssage(error):
 def run(settingPath):
 	global mods_registry
 	global modList
-	mods_registry = os.path.join(settingPath, mods_registry)
-	with open(mods_registry, encoding='UTF-8') as data:
+	mods_registry = Path(settingPath) /  mods_registry
+	with mods_registry.open(encoding='UTF-8') as data:
 		data = json.load(data)
 		if not len(data):
 			abort('No mod found!')
 	modList = [d['displayName'].encode() for _, d in data.items() if 'displayName' in d]
 
 
-def getWorkshopPath(SteamPath):
-	SteamPath = Path(SteamPath) / "steamapps"
-	if not SteamPath.is_dir():
+def getWorkshopPath(STEAM_PATH):
+	STEAM_PATH = Path(STEAM_PATH) / "steamapps"
+	if not STEAM_PATH.is_dir():
 		return
-
-	workshop = SteamPath / "workshop"
-
+	workshop = STEAM_PATH / "workshop"
 	if not workshop.is_dir():
-		workshop = SteamPath / "libraryfolders.vdf"
+		workshop = STEAM_PATH / "libraryfolders.vdf"
 		if workshop.is_file():
-			with open(str(workshop), "r", encoding="utf-8") as workshop:
+			with workshop.open(encoding="utf-8") as workshop:
 				workshop = workshop.readlines()
 				for l in workshop:
 					l = re.search(r'\s*"1"\s*\"([^"]+)\"$', l)
@@ -82,16 +76,15 @@ def getWorkshopPath(SteamPath):
 						workshop = Path(l) / "steamapps" / "workshop"
 						break
 				if type(workshop) is not list and workshop.is_dir():
-					SteamPath = workshop
+					STEAM_PATH = workshop
 	else:
-		SteamPath = workshop
-	return SteamPath
+		STEAM_PATH = workshop
+	return STEAM_PATH
 
 
-def genModList(SteamPath):
-
-	SteamPath = getWorkshopPath(SteamPath)
-	if not SteamPath:
+def genModList(STEAM_PATH):
+	STEAM_PATH = getWorkshopPath(STEAM_PATH)
+	if not STEAM_PATH:
 		return abort('No Steam workshop path found!')
 
 	def _getFiles(workshop):
@@ -102,7 +95,7 @@ def genModList(SteamPath):
 		file_list = sorted(file_list.glob("*"))
 		return file_list
 
-	files = _getFiles(SteamPath)
+	files = _getFiles(STEAM_PATH)
 	# print(type(files),len(files),*files, sep="\n")
 	outlist = open(os.path.join(settingPath, 'list.txt'),'w+')
 	out = []
@@ -118,10 +111,10 @@ def genModList(SteamPath):
 			else:
 				f = str(f)
 				print("Error: no valid mod file found!", f)
-				os.rmdir(f)
+				os.rmdir(f) # Empty dir
 			continue
 
-		descriptor = open(str(file),"r", encoding="utf-8")
+		descriptor = file.open(encoding="utf-8")
 		contents = descriptor.readlines()
 		for line in contents :
 			if "name" in line:
@@ -143,10 +136,10 @@ def genModList(SteamPath):
 
 if len(settingPath) > 0:
 	settingPath = settingPath[0]
-	print('Find Stellaris setting at %s' % settingPath)
+	# print('Find Stellaris setting at %s' % settingPath)
 	try:
 		# run(settingPath)
-		genModList(SteamPath)
+		genModList(STEAM_PATH)
 		mBox('', 'done')
 
 	except Exception as e:
