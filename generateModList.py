@@ -60,32 +60,48 @@ def run(settingPath):
 	modList = [d['displayName'].encode() for _, d in data.items() if 'displayName' in d]
 
 
+def getWorkshopPath(SteamPath):
+	SteamPath = Path(SteamPath) / "steamapps"
+	if not SteamPath.is_dir():
+		return
+
+	workshop = SteamPath / "workshop"
+
+	if not workshop.is_dir():
+		workshop = SteamPath / "libraryfolders.vdf"
+		if workshop.is_file():
+			with open(str(workshop), "r", encoding="utf-8") as workshop:
+				workshop = workshop.readlines()
+				for l in workshop:
+					l = re.search(r'\s*"1"\s*\"([^"]+)\"$', l)
+					# if '	"1"		' in l:
+					if l:
+						workshop = l and l.group(1) or None
+						if workshop:
+							workshop = Path(workshop) / "steamapps" / "workshop"
+							break
+				if type(workshop) is not list and workshop.is_dir():
+					SteamPath = workshop
+	else:
+		SteamPath = workshop
+	return SteamPath
+
+
 def genModList(SteamPath):
-	SteamPath = Path(SteamPath)
-	if not SteamPath.is_dir():
-		return
 
-	with open(str(SteamPath / "steamapps" / "libraryfolders.vdf"), "r", encoding="utf-8") as workshop:
-		workshop = workshop.readlines()
+	SteamPath = getWorkshopPath(SteamPath)
+	if not SteamPath:
+		return abort('No path found!')
 
-	for l in workshop:
-		if '	"1"		' in l:
-			l = re.search(r'\s*"1"\s*\"([^"]+)\"$', l)
-			workshop = l and l.group(1) or None
-			break
-
-	SteamPath = Path(workshop)
-	if not SteamPath.is_dir():
-		return
-
-
-	def _getFiles():
+	def _getFiles(workshop):
 		"This will return absolute paths"
-		file_list = SteamPath / "steamapps\\workshop\\content\\281990\\"
+		if not workshop.is_dir():
+			return
+		file_list = workshop / "content" / "281990"
 		file_list = sorted(file_list.glob("*"))
 		return file_list
 
-	files = _getFiles()
+	files = _getFiles(SteamPath)
 	# print(type(files),len(files),*files, sep="\n")
 	outlist = open(os.path.join(settingPath, 'list.txt'),'w+')
 	out = []
@@ -116,7 +132,7 @@ def genModList(SteamPath):
 					break
 
 	if len(out):
-		# out.sort()
+		out.sort()
 		for item in out:
 			outlist.write("%s\n" % item)
 		# outlist.write(json.dumps(out))
