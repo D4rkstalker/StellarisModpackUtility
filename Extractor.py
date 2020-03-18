@@ -53,3 +53,5 @@ for d in descriptors:
             outDir = "mod/" + ''.join(e for e in entry if e.isalnum())
             print("Copying",entry)
             copyDirectory(modDir,outDir)
+print("Done!")
+input()

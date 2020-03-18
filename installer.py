@@ -53,3 +53,5 @@ tags={
 	\"Gameplay\"
 }
 supported_version=\"2.5.*\"""")
+print("Done!")
+input()

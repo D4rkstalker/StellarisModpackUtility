@@ -42,3 +42,5 @@ for item in out:
     outlist.write((item.replace(".mod","").replace(".zip","") + '\n'))
 outlist.close()
 whitelist = open('whitelist.txt','w+')
+print("Done!")
+input()

@@ -3,7 +3,7 @@ import glob
 from shutil import copy2
 import filecmp
 
-MOD_TO_REMOVE = "BNPWarframePortraitsMachines"
+MOD_TO_REMOVE = "ProjectArk"
 
 modFiles = glob.glob('mod/'+MOD_TO_REMOVE +'/**',recursive=True)
 conflictingFiles = []
@@ -25,3 +25,5 @@ for _file in modFiles:
                 print("Not found! : " + deleteDis)
 for conflict in conflictingFiles:
     print ("conflicts: " + str(conflict))
+print("Done!")
+input()

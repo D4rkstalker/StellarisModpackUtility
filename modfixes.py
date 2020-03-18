@@ -35,10 +35,11 @@ targets3 = {
 	# "country_resource_unity_mult" : "country_base_unity_produces_mult",
 	# "pop_eff_wo_slaves" : "pop_cat_slave_happiness"
 	#"trait_robot_domestic_protocols" : "trait_just-more-traits_robot_robosexuals"
-	"has_ascension_perk = ap_machine_worlds has_ascension_perk = ap_synth_artificial_worlds" : "OR ={ has_ascension_perk = ap_machine_worlds has_ascension_perk = ap_synth_artificial_worlds }"
+	"levels = -1" : "levels = 5"
+	#"has_ascension_perk = ap_machine_worlds has_ascension_perk = ap_synth_artificial_worlds" : "OR ={ has_ascension_perk = ap_machine_worlds has_ascension_perk = ap_synth_artificial_worlds }"
 }
 	
-fileList = glob.glob('mod/! Modpack/common/terraform/**',recursive=True)
+fileList = glob.glob('mod/! Modpack/common/technology/**',recursive=True)
 print(targets)
 for _file in fileList: 
 	if os.path.isfile(_file) and ".txt" in _file:
@@ -95,4 +96,6 @@ for _file in fileList:
 			print(e)
 			print("Unable to open",_file)
 		readFile.close()
+print("Done!")
+input()
 
