@@ -9,7 +9,7 @@ def jobs(files):
         out_file = os.path.join(out_dir, os.path.basename(file))
         with open(file, 'r') as f:
             text = f.read()
-        targets = ["research","unity","alloys","minerals","energy","consumer_goods","food","volatile_motes","exotic_gases","rare_crystals"]
+        targets = ["physics_research","society_research","engineering_research","unity","alloys","minerals","energy","consumer_goods","food","volatile_motes","exotic_gases","rare_crystals"]
         specialTargets = ["amenities","trade_value","defense_armies"]
 
         text = re.sub('\t*\n', '\n', text)

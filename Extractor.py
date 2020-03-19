@@ -110,7 +110,7 @@ def run(settingPath):
 		for f in files:
 			if entry + ".zip" == f.name:
 				print(entry, f.name)
-				unzip(f, os.path.join(settingPath, 'mod', ''.join(e for e in str(f) if e.isalnum())))
+				unzip(f, os.path.join(settingPath, 'mod', f.name.split(".")[0]))
 				break
 
 if len(settingPath) > 0:

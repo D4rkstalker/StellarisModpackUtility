@@ -1,4 +1,4 @@
-targets = ["research","unity","alloys","minerals","energy","consumer_goods","food","volatile_motes","exotic_gases","rare_crystals"]
+targets = ["physics_research","society_research","engineering_research","unity","alloys","minerals","energy","consumer_goods","food","volatile_motes","exotic_gases","rare_crystals"]
 specialTargets = ["amenities","trade_value","defense_armies"]
 
 template = """trait_priority_{} = {{
