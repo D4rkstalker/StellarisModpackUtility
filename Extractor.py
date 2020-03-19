@@ -108,9 +108,10 @@ def run(settingPath):
 	#For 2.3-
 	for entry in whiteList:
 		for f in files:
-			if entry + ".zip" == f.name:
-				print(entry, f.name)
-				unzip(f, os.path.join(settingPath, 'mod', f.name.split(".")[0]))
+			#print(f.name,entry)
+			if ''.join(e for e in (f.name.replace(".zip","")) if e.isalnum()) == entry:
+				#print(entry, f.name)
+				unzip(f, os.path.join(settingPath, 'mod', ''.join(e for e in (f.name.replace(".zip","")) if e.isalnum()) ))
 				break
 
 if len(settingPath) > 0:

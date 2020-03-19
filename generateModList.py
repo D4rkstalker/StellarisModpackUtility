@@ -108,7 +108,7 @@ def genModList(STEAM_PATH):
 			print(f, "no descriptor.mod found")
 			file = next(f.glob("*.zip"), '')
 			if file and file.exists():
-				out.append(file.name.replace(".zip",""))
+				out.append(''.join(e for e in file.name.replace(".zip","") if e.isalnum()))
 			else:
 				f = str(f)
 				print("Error: no valid mod file found!", f)
