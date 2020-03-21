@@ -17,11 +17,9 @@
 
 -Place all scripts in C:\Users\<your username>\Documents\Paradox Interactive\Stellaris\
 
--Edit generateModList.py and extractor.py, change STEAM_PATH to your steam installation directory
-
 -Run generateModList.py
 
-  >This will create list.txt which contains a lost of all installed mods and an empty whitelist.txt 
+  >This will create list.txt which contains a list of all installed mods and an empty whitelist.txt 
   
   >Mods which are not updated for 2.4+ will be listed according to their zip file name, which may be abbreviated
   
