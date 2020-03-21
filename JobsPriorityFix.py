@@ -1,7 +1,12 @@
 import glob
 import os
 import re
+
+print("Modname:")
+JOBS_FOLDER = "mod\\" + input() + "\\common\\pop_jobs"
+
 files = []
+
 
 def jobs(files):
     for file in files:
@@ -51,7 +56,7 @@ def jobs(files):
                             jobTypes = list(dict.fromkeys(jobTypes))
                             modifiers = ["weight = {\n"]
                             for jobType in jobTypes:
-                                modifiers.append('\t\tmodifier = {{ \n\t\t\tfactor = 100 \n\t\t\thas_trait = trait_priority_{}\n\t\t\t}}\n'.format(jobType))
+                                modifiers.append('\t\tmodifier = {{ \n\t\t\tfactor = 1000 \n\t\t\thas_trait = trait_priority_{}\n\t\t\t}}\n'.format(jobType))
                                 modifiers.append('\t\tmodifier = {{ \n\t\t\tfactor = 0.001 \n\t\t\thas_trait = trait_negative_priority_{}\n\t\t\t}}\n'.format(jobType))
                             if "trait_priority_" not in thing and "trait_negative_priority_" not in thing:
                                 line = line.replace('weight = {',''.join(modifiers), 1)                                
@@ -66,8 +71,8 @@ def jobs(files):
 
 def parse_dir():
     global out_dir, files
-    target_dir = "mod\\! Modpack\\common\\pop_jobs"
-    out_dir = "mod\\! Modpack\\common\\pop_jobs"
+    target_dir = JOBS_FOLDER
+    out_dir = JOBS_FOLDER
 
     files += glob.glob(target_dir + '\\*.txt')
 

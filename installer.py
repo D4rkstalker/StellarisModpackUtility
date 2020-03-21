@@ -9,7 +9,7 @@ whitelist = whitelist.split("\n")
 
 #Set to true if updating a mod
 print("Auto-override unmarked files? (True/False)")
-override = bool(input())
+override = input()
 for item in whitelist:
     entry = ''.join(e for e in item if e.isalnum())
     if not entry == "":
@@ -27,20 +27,31 @@ for item in whitelist:
             if os.path.isfile(filePath) and os.path.isfile(name) and not filecmp.cmp(filePath,name):
                 #Check if file has been manually modified
                 
-                with open(name,"r") as f:
-                    try:
-                        modification = f.readline()
-
-                        #Mark manually modified file with '#MODIFIED' as the first line, files not marked will be auto overriden
-                        if "#MODIFIED" not in modification and override:
+                f = open(filePath,"r")
+                try:
+                    #print(override)
+                    modification = f.readline()
+                    f.close()
+                    #print(modification)
+                    #Mark manually modified file with '#MODIFIED' as the first line, files not marked will be auto overriden
+                    if override == 'True':
+                        if "#MODIFIED" in modification:
                             file_path[-1] = file_path[-1] + " " + entry.strip() + ".txt"
                             file_path[0] = "mod/!conflicts!"
                         else: 
-                            print("Conflict found, overriding " + filename)
-                    except Exception as e:
-                        print(str(e) + " \nMoving to conflicts: " + filename)
+                            print("Overriding " + '\\'.join(file_path))
+                            os.remove('\\'.join(file_path))
+                    else:
+                        if "#MODIFIED" not in modification:
+                            with open(filePath,"w") as dest:
+                                dest.write("#MODIFIED")
+                                dest.write(f.read())
                         file_path[-1] = file_path[-1] + " " + entry.strip() + ".txt"
                         file_path[0] = "mod/!conflicts!"
+                except Exception as e:
+                    print(str(e) + " \nMoving to conflicts: " + filename)
+                    file_path[-1] = file_path[-1] + " " + entry.strip() + ".txt"
+                    file_path[0] = "mod/!conflicts!"
 
             
             #Finalize our destination path
