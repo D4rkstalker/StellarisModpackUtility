@@ -24,18 +24,19 @@ for item in whitelist:
             #print(filename)
             #If this file exists in our modpack and has different contents, move it to the conflicts folder
 
-            if os.path.isfile(filePath) and os.path.isfile(name) and not filecmp.cmp(filePath,name):
+            if os.path.isfile(filePath) and os.path.isfile(name) and not filecmp.cmp(filePath,name) and '.gfx' not in filePath and '.asset' not in filePath and '.yml' not in filePath and '.dds' not in filePath:
                 #Check if file has been manually modified
                 
                 f = open(filePath,"r")
                 try:
-                    #print(override)
-                    modification = f.readline()
+                    lines = f.readlines()
+                    modification = lines[0]
                     f.close()
                     #print(modification)
-                    #Mark manually modified file with '#MODIFIED' as the first line, files not marked will be auto overriden
+                    #Mark manually modified file with '#MODIFIED' as the first line, files not marked will be auto overriden                            
+
                     if override == 'True':
-                        if "#MODIFIED" in modification:
+                        if "#MODIFIED" in modification :
                             file_path[-1] = file_path[-1] + " " + entry.strip() + ".txt"
                             file_path[0] = "mod/!conflicts!"
                         else: 
@@ -44,14 +45,15 @@ for item in whitelist:
                     else:
                         if "#MODIFIED" not in modification:
                             with open(filePath,"w") as dest:
-                                dest.write("#MODIFIED")
-                                dest.write(f.read())
+                                dest.write("#MODIFIED\n")
+                                dest.write("".join(lines))
                         file_path[-1] = file_path[-1] + " " + entry.strip() + ".txt"
                         file_path[0] = "mod/!conflicts!"
                 except Exception as e:
                     print(str(e) + " \nMoving to conflicts: " + filename)
                     file_path[-1] = file_path[-1] + " " + entry.strip() + ".txt"
                     file_path[0] = "mod/!conflicts!"
+                
 
             
             #Finalize our destination path

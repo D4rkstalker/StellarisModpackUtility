@@ -18,10 +18,10 @@ n_template = """trait_negative_priority_{} = {{
 }}
 """
 
-l_template = """	trait_priority_{}:0\"{} prioritization\"
-	trait_priority_research_desc:0\"Pops are more likely to take up jobs that produce {}\"\n"""
-l_n_template = """	trait_negative_priority_{}:0\"{} avoidance\"
-	trait_priority_research_desc:0\"Pops are less likely to take up jobs that produce {}\"\n"""
+l_template = """ trait_priority_{}:0\"{} prioritization\"
+ trait_priority_{}_desc:0\"Pops are more likely to take up jobs that produce {}\"\n"""
+l_n_template = """ trait_negative_priority_{}:0\"{} avoidance\"
+ trait_negative_priority_{}_desc:0\"Pops are less likely to take up jobs that produce {}\"\n"""
 
 with open("traits.txt", 'w+') as f:
 	for target in targets:
@@ -31,13 +31,13 @@ with open("traits.txt", 'w+') as f:
 		f.write(template.format(target))		
 		f.write(n_template.format(target))
 with open("job_prio_traits.yml", 'w+') as f:
-	f.write("l_english:")
+	f.write("l_english:\n")
 	for target in targets:
-		target = target.replace("_", " ")
-		f.write(l_template.format(target,target,target))		
-		f.write(l_n_template.format(target,target,target))
+		target1 = target.replace("_", " ")
+		f.write(l_template.format(target,target1,target,target1))		
+		f.write(l_n_template.format(target,target1,target,target1))
 	for target in specialTargets:
-		target = target.replace("_", " ")
-		f.write(l_template.format(target,target,target))		
-		f.write(l_n_template.format(target,target,target))
+		target1 = target.replace("_", " ")
+		f.write(l_template.format(target,target1,target,target1))		
+		f.write(l_n_template.format(target,target1,target,target1))
 		
