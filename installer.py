@@ -69,6 +69,15 @@ for item in whitelist:
                     fileIndex[nameOfFile] = entry.strip()
 
                 copy2(name,filePath)
+            elif os.path.isfile(filePath) and ( '.gfx' in filePath or '.asset' in filePath or '.yml' in filePath or '.dds' in filePath): 
+                #print(filePath)
+                if nameOfFile in fileIndex:
+                    fileIndex[nameOfFile] +=", " + entry.strip()
+                else:
+                    fileIndex[nameOfFile] = entry.strip()
+
+                copy2(name,filePath)
+
 
 try:
     #Out put a list of conflicting files 

@@ -112,7 +112,7 @@ def genModList(STEAM_PATH):
 			else:
 				f = str(f)
 				print("Error: no valid mod file found!", f)
-				os.rmdir(f) # Empty dir
+				#os.rmdir(f) # Empty dir
 			continue
 
 		descriptor = file.open(encoding="utf-8")

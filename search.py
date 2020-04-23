@@ -3,11 +3,11 @@ import glob
 from shutil import copy2
 import filecmp
 #print("String to search: ")
-THING_TO_SEARCH = "days = 3"
+THING_TO_SEARCH = "max_instances = 1"
 # print("Directory to search: ")
 # DIRECTORY_TO_SEARCH = input()
 
-modFiles = glob.glob('mod/! Modpack/common/on_actions/**',recursive=True)
+modFiles = glob.glob('mod\\! Modpack\\common\\solar_system_initializers\\**',recursive=True)
 for _file in modFiles: 
 	if os.path.isfile(_file):
 		try:

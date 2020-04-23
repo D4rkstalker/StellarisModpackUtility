@@ -6,6 +6,7 @@ template = """trait_priority_{} = {{
 	initial = yes
 	randomized = no
 	modification = yes
+    ai_weight = {{ weight = 0 }}
 	allowed_archetypes = {{ BIOLOGICAL ROBOT MACHINE LITHOID}}
 }}
 """
@@ -14,6 +15,7 @@ n_template = """trait_negative_priority_{} = {{
 	initial = yes
 	randomized = no
 	modification = yes
+    ai_weight = {{ weight = 0 }}
 	allowed_archetypes = {{ BIOLOGICAL ROBOT MACHINE LITHOID}}
 }}
 """

@@ -22,6 +22,12 @@ def jobs(files):
         things = re.findall(r'\w*? = {.*?\n}', text, re.DOTALL)
         with open(out_file, 'w') as f:
             for thing in things:
+                text = ""
+                for line in thing.split("\n"):
+                    if "#" in line:
+                        line = line.split("#")[0]
+                    text += line + "\n"
+                thing = text
                 #print(thing)
                 try:
                     jobTypes = []
@@ -56,8 +62,8 @@ def jobs(files):
                             jobTypes = list(dict.fromkeys(jobTypes))
                             modifiers = ["weight = {\n"]
                             for jobType in jobTypes:
-                                modifiers.append('\t\tmodifier = {{ \n\t\t\tfactor = 1000 \n\t\t\thas_trait = trait_priority_{}\n\t\t\t}}\n'.format(jobType))
-                                modifiers.append('\t\tmodifier = {{ \n\t\t\tfactor = 0.001 \n\t\t\thas_trait = trait_negative_priority_{}\n\t\t\t}}\n'.format(jobType))
+                                modifiers.append('\t\tmodifier = {{ \n\t\t\tfactor = 50 \n\t\t\thas_trait = trait_priority_{}\n\t\t\t}}\n'.format(jobType))
+                                modifiers.append('\t\tmodifier = {{ \n\t\t\tfactor = 0.1 \n\t\t\thas_trait = trait_negative_priority_{}\n\t\t\t}}\n'.format(jobType))
                             if "trait_priority_" not in thing and "trait_negative_priority_" not in thing:
                                 line = line.replace('weight = {',''.join(modifiers), 1)                                
                             #print(modifiers)
