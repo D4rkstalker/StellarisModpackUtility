@@ -7,93 +7,101 @@ whitelist = open('whitelist.txt').read()
 fileIndex = {}
 whitelist = whitelist.split("\n")
 
-#Set to true if updating a mod
-print("Auto-override unmarked files? (True/False)")
-override = input()
+# Set to true if updating a mod
+override = False
+while True:
+    print("Auto-override unmarked files? (True/False) or (t/f) or (yes/no) or (y/n)")
+    readin = input().lower()
+    if readin in ['true', 'false', 't', 'f', 'yes', 'y', 'no', 'n']:
+        if readin in ['true', 't', 'yes' 'y']:
+            override = True
+        break
 for item in whitelist:
     entry = ''.join(e for e in item if e.isalnum())
-    if not entry == "":
-        fileList = glob.glob('mod/'+entry.replace("\n","")+'/**',recursive=True)
-        for filename in fileList:
-            #Hack together the destination path
-            file_path = str(filename).split("\\")
-            nameOfFile = str(filename).split("\\")[-1]
-            file_path[0] = "mod/! Modpack"
-            name = str(filename)
-            filePath = '\\'.join(file_path)
-            #print(filename)
-            #If this file exists in our modpack and has different contents, move it to the conflicts folder
-
-            if os.path.isfile(filePath) and os.path.isfile(name) and not filecmp.cmp(filePath,name) and '.gfx' not in filePath and '.asset' not in filePath and '.yml' not in filePath and '.dds' not in filePath:
-                #Check if file has been manually modified
-                
-                f = open(filePath,"r")
-                try:
-                    lines = f.readlines()
-                    modification = lines[0]
-                    f.close()
-                    #print(modification)
-                    #Mark manually modified file with '#MODIFIED' as the first line, files not marked will be auto overriden                            
-
-                    if override == 'True':
-                        if "#MODIFIED" in modification :
-                            file_path[-1] = file_path[-1] + " " + entry.strip() + ".txt"
-                            file_path[0] = "mod/!conflicts!"
-                        else: 
-                            print("Overriding " + '\\'.join(file_path))
-                            os.remove('\\'.join(file_path))
-                    else:
-                        if "#MODIFIED" not in modification:
-                            with open(filePath,"w") as dest:
-                                dest.write("#MODIFIED\n")
-                                dest.write("".join(lines))
-                        file_path[-1] = file_path[-1] + " " + entry.strip() + ".txt"
+    if entry == "":
+        continue # Skip blank lines
+    fileList = glob.glob('mod/'+entry.replace("\n","")+'/**',recursive=True)
+    for filename in fileList:
+        # Hack together the destination path
+        file_path = str(filename).split(os.sep)
+        file_path[0] = "mod/! Modpack"
+        name = str(filename)
+        filePath = os.sep.join(file_path)
+        path_within_mod = os.sep.join(file_path[1:])
+        # If this file exists in our modpack and has different contents, move it to the conflicts folder
+        if os.path.isfile(filePath) and os.path.isfile(name) and not filecmp.cmp(filePath, name):
+            # Check if file has been manually modified
+            f = open(filePath,"r")
+            try:
+                lines = f.readlines()
+                modification = lines[0]
+                f.close()
+                # Mark manually modified file with '#MODIFIED' as the first line, files not marked will be auto overriden
+                if override:
+                    if "#MODIFIED" in modification:
+                        fname, extension = file_path[-1].split('.')
+                        file_path[-1] = fname + " " + entry.strip() + "." +  extension
                         file_path[0] = "mod/!conflicts!"
-                except Exception as e:
-                    print(str(e) + " \nMoving to conflicts: " + filename)
-                    file_path[-1] = file_path[-1] + " " + entry.strip() + ".txt"
+                        print_conflict_path = os.sep.join(file_path[1:])
+                        print(f"Confict detected. Moving to !conficts!{os.sep}{print_conflict_path}.")
+                    else:
+                        print("Overriding " + os.sep.join(file_path))
+                        os.remove(os.sep.join(file_path))
+                else:
+                    if "#MODIFIED" not in modification:
+                        with open(filePath, "w") as dest:
+                            dest.write("#MODIFIED\n")
+                            dest.write("".join(lines))
+                    fname, extension = file_path[-1].split('.')
+                    file_path[-1] = fname + " " + entry.strip() + "." +  extension
                     file_path[0] = "mod/!conflicts!"
-                
+                    print_conflict_path = os.sep.join(file_path[1:])
+                    print(f"Confict detected. Moving to !conficts!{os.sep}{print_conflict_path}.")
+            except Exception as e:
+                fname, extension = file_path[-1].split('.')
+                file_path[-1] = fname + " " + entry.strip() + "." +  extension
+                file_path[0] = "mod/!conflicts!"
+                print_conflict_path = os.sep.join(file_path[1:])
+                print(f"Confict detected. Moving to !conficts!{os.sep}{print_conflict_path}.")
 
-            
-            #Finalize our destination path
-            filePath = '\\'.join(file_path)
-            path = os.path.dirname(filePath)
-            if not os.path.exists(path): 
-                os.makedirs(path)
-            #Do not copy descriptor.mod, makes file explorer crash-y for some reason 
-            if os.path.isfile(name) and not os.path.isfile(filePath) and ".mod" not in name: 
-                if nameOfFile in fileIndex:
-                    fileIndex[nameOfFile] +=", " + entry.strip()
-                else:
-                    fileIndex[nameOfFile] = entry.strip()
-
-                copy2(name,filePath)
-            elif os.path.isfile(filePath) and ( '.gfx' in filePath or '.asset' in filePath or '.yml' in filePath or '.dds' in filePath): 
-                #print(filePath)
-                if nameOfFile in fileIndex:
-                    fileIndex[nameOfFile] +=", " + entry.strip()
-                else:
-                    fileIndex[nameOfFile] = entry.strip()
-
-                copy2(name,filePath)
-
+        # Finalize our destination path
+        filePath = os.sep.join(file_path)
+        path = os.path.dirname(filePath)
+        if not os.path.exists(path):
+            os.makedirs(path)
+        # Do not copy descriptor.mod, makes file explorer crash-y for some reason.
+        if os.path.isfile(name) and ".mod" not in name:
+            if path_within_mod in fileIndex:
+                fileIndex[path_within_mod][0].append(entry.strip())
+                fileIndex[path_within_mod][1] += 1
+            else:
+                fileIndex[path_within_mod] = [[entry.strip()], 0]
+            copy2(name, filePath)
 
 try:
-    #Out put a list of conflicting files 
-    fileIndexOut = open("mod/!conflicts!/filesList.txt","w+")
-    fileIndexOut.write(json.dumps(fileIndex,indent = 4))
+    conflicts_list = dict()
+    for i in fileIndex:
+        if fileIndex[i][1]:
+            conflicts_list[i] = fileIndex[i][0]
+        fileIndex[i] = fileIndex[i][0]
+
+    # Output a list of all files and a list of the conflicting files
+    fileIndexOut = open("mod/!conflicts!/allFilesList.txt","w+")
+    fileIndexOut.write(json.dumps(fileIndex, indent = 4))
     fileIndexOut.close()
-except: 
+    conflictsOut = open("mod/!conflicts!/conflictingFilesList.txt","w+")
+    conflictsOut.write(json.dumps(conflicts_list, indent = 4))
+    conflictsOut.close()
+    print("Conflicting files listed in mod/!conflicts!/conflictingFilesList.txt")
+except:
     print("No conflicts!")
 
-if not os.path.isfile("mod/Modpack.mod"): 
+if not os.path.isfile("mod/Modpack.mod"):
     descriptor = open("mod/Modpack.mod","w+")
     descriptor.write("""name=\"! Modpack"
 path=\"mod/! Modpack\"
 tags={
 	\"Gameplay\"
 }
-supported_version=\"2.5.*\"""")
+supported_version=\"2.7.*\"""")
 print("Done!")
-input()
