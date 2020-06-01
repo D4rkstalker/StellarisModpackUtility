@@ -1,9 +1,9 @@
 import os
 import io
-import sys
 import tkinter as tk
 from tkinter import messagebox
 import traceback
+# import sys
 # import json
 # from ruamel.yaml import YAML
 # from ruamel.yaml.compat import StringIO
@@ -15,9 +15,9 @@ import glob
 # Write here your mod folder name
 localModPath = "ADeadlyTempest"
 
-def abort(message):
-	mBox('abort', message, 0)
-	sys.exit(1)
+# def abort(message):
+# 	mBox('abort', message, 0)
+# 	sys.exit(1)
 
 
 def mBox(type, text):
@@ -65,7 +65,6 @@ localizations = ["english", "german", "russian", "spanish", "braz_por", "french"
 def tr(s):
 	print(type(s),len(s))
 	if type(s) is bytes: s = s.decode('utf-8')
-	# s=s.decode('utf8')
 	# s = re.sub('\n', '\\n', s)
 	s = s.replace('\\n', 'BRR')
 	# s = re.sub(r'\\n', '\\n', s)
@@ -95,7 +94,6 @@ def getYAMLstream(lang, filename):
 
 def writeStream(lang, stream, filename):
 	"Write YAML file"
-	#TODO create dir
 	filename = filename.replace("english", lang)
 	if not os.path.isdir(lang):
 		try:
@@ -112,19 +110,18 @@ def writeStream(lang, stream, filename):
 		f.write(stream)
 		# yaml.dump(stream, f, indent=1)
 
-
 # yaml = ruamel.yaml.YAML(typ='safe')
 yaml.default_flow_style = False
 yaml.allow_unicode = True
-yaml.indent = 0
+# yaml.indent = 0
 # yaml.allow_duplicate_keys = False
 # if __name__ == '__main__':
 # yaml.warnings({'YAMLLoadWarning': False})
+
 #CrisisManagerEvent_l_english
 for filename in glob.iglob(os.path.join('english','*.yml'), recursive=False):
 	# print(filename)
 	streamEn = getYAMLstream(localizations[0], filename)
-
 	streamEn = streamEn.read()
 	# print(streamEn)
 	dictionary = {}
@@ -136,19 +133,15 @@ for filename in glob.iglob(os.path.join('english','*.yml'), recursive=False):
 	# doc = yaml.load_all(stream, Loader=yaml.FullLoader)
 	# doc = yaml.dump(dictionary) # ["\u00ef\u00bb\u00bfl_english"]
 	# doc = json.dumps(dictionary) # ["\u00ef\u00bb\u00bfl_english"]
-
 	# doc = yaml.dump(dictionary)
 	# print(type(dictionary), dictionary)
 	# doc = tr(dictionary['l_english'])
-
 	# dictionary = yaml.load(tr(streamEn), Loader=yaml.FullLoader)
 	dictionary = yaml.safe_load(tr(streamEn))
 	# print("New document:", type(dictionary))
 	doc = dictionary["l_english"]
 	# print(type(doc), doc)
-
 	# for doc in dictionary:
-	# if type(dictionary) is dict:
 	for lang in range(1, len(localizations)):
 		changed = False
 		lang = localizations[lang]
