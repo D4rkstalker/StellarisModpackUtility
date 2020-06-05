@@ -53,7 +53,7 @@ def make_modpack(modpack_name, overwrite):
                 fileIndex[path_within_mod][1] += 1
                 file_path[1] = f"{modpack_name}_conflicts!"  # Copy the conflicting file to the conflicts folder.
                 fname, extension = file_path[-1].split('.')
-                file_path[-1] = fname + " " + entry.strip() + "." +  extension
+                file_path[-1] = fname + extension + " " + entry.strip() + "." +  extension
                 print(f"Confict detected. Moving to {os.sep.join(file_path[1:])}.")
             else:
                 # First time we've seen a file at this path.
@@ -112,7 +112,7 @@ def get_name_from_cl():
     parser = ArgumentParser()
     parser.add_argument('-n', '--modpack_name', default="! modpack", type=str,
         help='The name of the modpack (both the folder name and the name in the stellaris launcher).')
-    parser.add_argument('-ovr', '--nopatch', action='store_true', default=False,
+    parser.add_argument('-ovr', '--nopatch', action='store_true', default=True,
         help="Add this argument to overwrite files in the mod folder without generating a patch. By default, " \
             "modifications within the *modpack_name* folder will be saved to a new mod called *modpack_name*_patch")
     args = parser.parse_args()
@@ -121,4 +121,5 @@ def get_name_from_cl():
 
 if __name__ == "__main__":
     modpack_name, overwrite = get_name_from_cl()
+    print(overwrite)
     make_modpack(modpack_name, overwrite)

@@ -40,7 +40,7 @@ for item in whitelist:
                 if override:
                     if "#MODIFIED" in modification:
                         fname, extension = file_path[-1].split('.')
-                        file_path[-1] = fname + " " + entry.strip() + "." +  extension
+                        file_path[-1] = fname + "." +  extension + " " + entry.strip() + "." +  extension
                         file_path[0] = "mod/!conflicts!"
                         print_conflict_path = os.sep.join(file_path[1:])
                         print(f"Confict detected. Moving to !conficts!{os.sep}{print_conflict_path}.")
@@ -53,13 +53,13 @@ for item in whitelist:
                             dest.write("#MODIFIED\n")
                             dest.write("".join(lines))
                     fname, extension = file_path[-1].split('.')
-                    file_path[-1] = fname + " " + entry.strip() + "." +  extension
+                    file_path[-1] = fname + "." +  extension + " " + entry.strip() + "." +  extension
                     file_path[0] = "mod/!conflicts!"
                     print_conflict_path = os.sep.join(file_path[1:])
                     print(f"Confict detected. Moving to !conficts!{os.sep}{print_conflict_path}.")
             except Exception as e:
                 fname, extension = file_path[-1].split('.')
-                file_path[-1] = fname + " " + entry.strip() + "." +  extension
+                file_path[-1] = fname + "." +  extension + " " + entry.strip() + "." +  extension
                 file_path[0] = "mod/!conflicts!"
                 print_conflict_path = os.sep.join(file_path[1:])
                 print(f"Confict detected. Moving to !conficts!{os.sep}{print_conflict_path}.")

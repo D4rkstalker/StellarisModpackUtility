@@ -40,7 +40,7 @@ def ModSystems():
                 unique = True
             if "spawn_chance = " in system:
                 spawnChance = True
-            if "usage_odds = {" in system:
+            if "usage_odds = " in system:
                 base = True
             for line in system.split("\n"):
                 if "spawn_chance = " in line and unique and spawnChance:
@@ -50,8 +50,10 @@ def ModSystems():
                     line = "\t\tbase = 9999"
                     #print(file)
                     #base = False
+                elif "usage_odds =" in line and "{" not in line and unique and base: 
+                    line = "\tusage_odds = 9999"
                 if "max_instances = 1" in line and not base:
-                    out.append("\tusage_odds = { base = 9999 }\n")
+                    out.append("\tusage_odds = 9999\n")
                 if "max_instances = 1" in line and not spawnChance:
                     out.append("\tspawn_chance = 9999\n")
                 out.append(line + "\n")

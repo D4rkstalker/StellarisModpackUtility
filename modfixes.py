@@ -12,6 +12,7 @@ targets = [
 	# """has_ascension_perk = ap_synthetic_evolution"""
 ]
 targets2 = {
+	#r"power = \d*" : ["power = "]
 	#r"_hull_add = \d*" : ["_hull_add = "],
 	# r"MACHINE_species_trait_points_add = \d" : ["MACHINE_species_trait_points_add ="," ROBOT_species_trait_points_add = ",""],
 	# r"job_replicator_add = \d":["if = {limit = {has_authority = auth_machine_intelligence} job_replicator_add = ", "} if = {limit = {has_country_flag = synthetic_empire} job_roboticist_add = ","}"]
@@ -29,19 +30,30 @@ targets3 = {
 	# "tile_resource_food_mult" : "planet_jobs_food_produces_mult",
 	# "tile_resource_unity_mult" : "planet_jobs_unity_produces_mult",
 	# "pop_robot_build_speed_mult" : "pop_assembly_speed",
-	#"leader_trait = yes" : "leader_trait = { admiral }"
 	# "pop_robot_upkeep_mult" : "planet_pops_robotics_upkeep_mult",
 	# "pop_robot_build_cost_mult" : "planet_pop_assemblers_upkeep_mult",
 	# "country_resource_influence_add" : "country_base_influence_produces_add",
 	# "country_resource_unity_mult" : "country_base_unity_produces_mult",
 	# "pop_eff_wo_slaves" : "pop_cat_slave_happiness"
+	#"leader_trait = yes" : "leader_trait = { admiral }",
 	#"trait_robot_domestic_protocols" : "trait_just-more-traits_robot_robosexuals"
-	"levels = -1" : "levels = 5"
+	#"levels = -1" : "levels = 5"
 	#"is_megastructure_type = lgate_base" : "OR = { is_megastructure_type = lgate_base is_megastructure_type = lgate_disabled}"
 	#"has_ascension_perk = ap_machine_worlds has_ascension_perk = ap_synth_artificial_worlds" : "OR ={ has_ascension_perk = ap_machine_worlds has_ascension_perk = ap_synth_artificial_worlds }"
+	"default_robot" : "2dsynth_01",
+	"sd_mam_robot" : "mammaliansynth",
+	"sd_rep_robot" : "reptiliansynth",
+	"sd_avi_robot" : "aviansynth",
+	"sd_art_robot" : "arthropoidsynth",
+	"sd_mol_robot" : "synthetic_robot_01",
+	"sd_fun_robot" : "mammaliansynth",
+	"sd_hum_robot" : "2dsynth_01",
+	"lith_machine" : "dragon_robot"
+	
 }
 	
-fileList = glob.glob('mod/! Modpack/common/technology/**',recursive=True)
+fileList = glob.glob('mod/! Modpack/common/**',recursive=True)
+#fileList = ["mod/! Modpack/common/component_templates/auxmodpack_cores.txt"]
 #print(targets)
 for _file in fileList: 
 	if os.path.isfile(_file) and ".txt" in _file:
@@ -55,51 +67,48 @@ for _file in fileList:
 			readFile.close()
 			out = ""
 			#print(text)
-			if "is_megastructure_type = lgate_disabled" not in text:
-				if "is_megastructure_type = lgate_base" in text:
-					print(_file)
-					for i in range(0,len(fileContents)):
-						line = fileContents[i]
-						#print(line)
-						# for target in targets:
+			# if "is_megastructure_type = lgate_disabled" not in text:
+			# 	if "is_megastructure_type = lgate_base" in text:
+				#print(_file)
+			for i in range(0,len(fileContents)):
+				line = fileContents[i]
+				#print(line)
+				# for target in targets:
+					
+				# 	#has_ascension_perk = ap_synthetic_evolution 
+				# 	replacer = "OR = {has_country_flag = synthetic_empire "+target+"}"
+				# 	if target in line and replacer not in line: 
+				# 		#print(target)
+				# 		shouldReplace = True
+				# 		for j in range(i,0,-1):
+				# 			if "{" in fileContents[j]:
+				# 				if "NOR" in fileContents[j] or "NOT" in fileContents[j] :
+				# 					shouldReplace = False
+				# 				#print (fileContents[j])
+				# 				break
+				# 		#print(line)
+				# 		if shouldReplace:
+				# 			line = line.replace(target,replacer)
+				# for t,r in targets2.items():
+				# 	targets = re.findall(t,fileContents[i])
+				# 	if len(targets) > 0:
+				# 		for target in targets:
 							
-						# 	#has_ascension_perk = ap_synthetic_evolution 
-						# 	replacer = "OR = {has_country_flag = synthetic_empire "+target+"}"
-						# 	if target in line and replacer not in line: 
-						# 		#print(target)
-						# 		shouldReplace = True
-						# 		for j in range(i,0,-1):
-						# 			if "{" in fileContents[j]:
-						# 				if "NOR" in fileContents[j] or "NOT" in fileContents[j] :
-						# 					shouldReplace = False
-						# 				#print (fileContents[j])
-						# 				break
-						# 		#print(line)
-						# 		if shouldReplace:
-						# 			line = line.replace(target,replacer)
-						# for t,r in targets2.items():
-						# 	targets = re.findall(t,fileContents[i])
-						# 	if len(targets) > 0:
-						# 		for target in targets:
-									
-						# 			value = int(target.split("=")[1])
-						# 			replacer = ""
-						# 			for i in range(len(r)):
-						# 				replacer += r[i]
-						# 				#if i < len(r) -1:
-						# 				replacer += str(int(value * 3.5))
-						# 			print(replacer)
-						# 			if target in line and replacer not in line: 
-						# 				line = line.replace(target,replacer)
-						for t,r in targets3.items():
-							if t in fileContents[i]:
-								line = line.replace(t,r)
-									
-
-
-						out += line
-					readFile = open(_file,"w")
-					readFile.write(out)
+				# 			value = int(target.split("=")[1])
+				# 			replacer = ""
+				# 			for i in range(len(r)):
+				# 				replacer += r[i]
+				# 				#if i < len(r) -1:
+				# 				replacer += str(int(value * 5))
+				# 			print(replacer)
+				# 			if target in line and replacer not in line: 
+				# 				line = line.replace(target,replacer)
+				for t,r in targets3.items():
+					if t in fileContents[i]:
+						line = line.replace(t,r)
+				out += line
+			readFile = open(_file,"w")
+			readFile.write(out)
 
 		except Exception as e: 
 			print(e)

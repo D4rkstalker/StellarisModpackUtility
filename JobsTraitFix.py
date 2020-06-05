@@ -79,3 +79,5 @@ def parse_dir():
 
 parse_dir()
 jobs(files)
+print("done!")
+input()
