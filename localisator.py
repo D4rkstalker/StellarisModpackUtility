@@ -1,3 +1,4 @@
+## You need install https://pyyaml.org/wiki/PyYAMLDocumentation
 import os
 import io
 import tkinter as tk
@@ -41,8 +42,7 @@ settingsPath = [
 	os.path.join(os.path.expanduser('~'), 'Documents', 'Paradox Interactive', 'Stellaris'),
 	os.path.join(os.path.expanduser('~'), '.local', 'share', 'Paradox Interactive', 'Stellaris')
 ]
-settingsPath = [s for s in settingsPath if os.path.isfile(
-	os.path.join(s, mods_registry))]
+settingsPath = [s for s in settingsPath if os.path.isfile(os.path.join(s, mods_registry))]
 
 
 if len(settingsPath):
@@ -60,7 +60,11 @@ localModPath = os.path.join(settingsPath, "mod", localModPath, "localisation")
 os.chdir(localModPath)
 
 localizations = ["english", "german", "russian", "spanish", "braz_por", "french", "polish", "simp_chinese"]
+local_OVERHAUL = ["spanish", "braz_por", "french", "polish"]
 # localizations = ["english", "russian"]
+
+regRev1 =re.compile(r'^ +(\S+:) \'?([^"])', re.MULTILINE)
+regRev2 = re.compile(r'(?:\'|([^:"]{2}))\'?$', re.MULTILINE)
 
 def tr(s):
 	print(type(s),len(s))
@@ -76,9 +80,9 @@ def trReverse(s):
 	print(type(s))
 	if type(s) is bytes: s = s.decode('utf-8')
 	s = s.replace('  ', ' ')
-	s = re.sub(re.compile(r'^ +(\S+:) \'?([^"])', re.MULTILINE), r' \g<1>0 "\2', s)
+	s = re.sub(regRev1, r' \g<1>0 "\2', s)
 	s = re.sub(r'BRR *', r'\\n', s)
-	s = re.sub(re.compile(r'(?:\'|([^:"]{2}))\'?$', re.MULTILINE), r'\1"', s)
+	s = re.sub(regRev2, r'\1"', s)
 	return s
 
 
@@ -158,16 +162,20 @@ for filename in glob.iglob(os.path.join('english','*.yml'), recursive=False):
 		# print("Str document:", type(langStream), langStream)
 		# langStream = yaml.load(langStream, Loader=yaml.FullLoader)
 		langStream = yaml.safe_load(langStream)
+
+		if not "l_"+lang in langStream:
+			print("FAIL on file", filename.replace("english", lang), langStream)
+			continue
 		langDict = langStream["l_"+lang]
 		#print("Dict document:", type(langStream), langStream)
 
 		# for _, doc in dictionary.items():
 		if type(doc) is dict and type(langDict) is dict:
 			for key, value in doc.items():
-				if key not in langDict:
+				if key not in langDict or (lang in local_OVERHAUL and langDict[key] != value):
 					langDict[key] = value
 					changed = True
-					print("Fixed document " + filename.replace("english", lang), key)
+					print("Fixed document " + filename.replace("english", lang), key, value)
 					# break
 				# else: print(bytes(key + ":0 " + langDict[key], "utf-8").decode("utf-8"))
 
