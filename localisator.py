@@ -64,7 +64,7 @@ localModPath = os.path.join(settingsPath, "mod", localModPath, "localisation")
 
 os.chdir(localModPath)
 
-regRev1 =re.compile(r'^ +\"?(\S+[^"])\"?: ', re.MULTILINE)
+regRev1 =re.compile(r'^ +\"([^:"\s]+)\": ', re.MULTILINE)
 regRev2 = re.compile(r'(?:\'|([^:"]{2}))\'?$', re.MULTILINE)
 
 def tr(s):
@@ -84,8 +84,9 @@ def trReverse(s):
 	print(type(s))
 	if type(s) is bytes: s = s.decode('utf-8')
 	s = s.replace('  ', ' ')
-	s = re.sub(regRev1, r' \g<1>:0 ', s) # add 0 to keys
 	s = re.sub(r'BRR *', r'\\n', s)
+	s = re.sub(regRev1, r' \g<1>:0 ', s) # add 0 to keys
+	s = re.sub(re.compile(r'^"(l_\S+)":\n'), r'\1:\n', s)
 	# s = s.replace("”", "\"")
 	s = s.replace("’", "\'")
 	# s = s.replace("…", ':')
