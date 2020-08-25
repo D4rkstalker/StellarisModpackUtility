@@ -39,7 +39,8 @@ def iBox(title, prefil, master):
 		parent=master)
 	return answer
 
-mods_registry = "mods_registry.json"
+# mods_registry = "mods_registry.json" # old launcher (changed in 2.7.2) 
+mods_registry = "settings.txt"
 
 # Check Stellaris settings location
 settingsPath = [
@@ -47,8 +48,9 @@ settingsPath = [
 	os.path.join(os.path.expanduser('~'), 'Documents', 'Paradox Interactive', 'Stellaris'),
 	os.path.join(os.path.expanduser('~'), '.local', 'share', 'Paradox Interactive', 'Stellaris')
 ]
-settingsPath = [s for s in settingsPath if os.path.isfile(os.path.join(s, mods_registry))]
 
+settingsPath = [s for s in settingsPath if os.path.isfile(os.path.join(s, mods_registry))]
+print(settingsPath)
 
 if len(settingsPath):
 	settingsPath = settingsPath[0]
@@ -130,9 +132,9 @@ yaml.allow_unicode = True
 # if __name__ == '__main__':
 # yaml.warnings({'YAMLLoadWarning': False})
 
-#CrisisManagerEvent_l_english
-for filename in glob.iglob(os.path.join('english','*.yml'), recursive=False):
-	# print(filename)
+#CrisisManagerEvent_l_english ,'**'
+for filename in glob.iglob(os.path.join('english', '*.yml'), recursive=False):
+	print(filename)
 	streamEn = getYAMLstream(localizations[0], filename)
 	streamEn = streamEn.read()
 	# print(streamEn)
