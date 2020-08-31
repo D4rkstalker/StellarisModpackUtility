@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
 ## USAGE: You need install https://pyyaml.org/wiki/PyYAMLDocumentation for Python3.x
 ## ATTENTION: You must customize the vars localModPath and local_OVERHAUL
 ## TODO: Renaming (already translated) keys is not working
@@ -16,7 +18,8 @@ import glob
 # yaml=YAML(typ='safe')
 
 # Write here your mod folder name
-localModPath = "ADeadlyTempest"
+# localModPath = "ADeadlyTempest"
+localModPath = "Decentralized Empires"
 localizations = ["english", "german", "russian", "spanish", "braz_por", "french", "polish", "simp_chinese"]
 local_OVERHAUL = ["spanish", "braz_por", "french", "polish"]
 # localizations = ["english", "russian"]
@@ -71,7 +74,7 @@ regRev2 = re.compile(r'(?:\'|([^:"]{2}))\'?$', re.MULTILINE)
 
 def tr(s):
 	print(type(s),len(s))
-	if type(s) is bytes: s = s.decode('utf-8')
+	if type(s) is bytes: s = s.decode('utf-8-sig')
 	# s = re.sub('\n', '\\n', s)
 	s = s.replace('\\n', 'BRR')
 	# s = s.replace("\"", '”')
@@ -84,7 +87,8 @@ def tr(s):
 def trReverse(s):
 	"Paradox workaround"
 	print(type(s))
-	if type(s) is bytes: s = s.decode('utf-8')
+	if type(s) is bytes: s = s.decode('utf-8-sig')
+	s = s.replace('\r\n', '\n') # Windows
 	s = s.replace('  ', ' ')
 	s = re.sub(r'BRR *', r'\\n', s)
 	s = re.sub(regRev1, r' \g<1>:0 ', s) # add 0 to keys
@@ -103,7 +107,7 @@ def getYAMLstream(lang, filename):
 	lang = os.path.join(os.getcwd(), filename)
 	# print(lang)
 	if os.path.isfile(lang):
-		return io.open(lang, "rb") #, encoding='utf-8-sig'
+		return io.open(lang, "rb") # "rb" , encoding='utf-8-sig'
 
 
 def writeStream(lang, stream, filename):
@@ -119,7 +123,7 @@ def writeStream(lang, stream, filename):
 	lang = os.path.join(os.getcwd(), filename)
 	print(lang, os.path.isfile(lang))
 	# if not os.path.isfile(lang):
-	if type(stream) is bytes: stream = stream.decode('utf-8')
+	if type(stream) is bytes: stream = stream.decode('utf-8-sig')
 	with io.open(lang, 'w', encoding='utf-8-sig') as f:
 		f.write(stream)
 		# yaml.dump(stream, f, indent=1)
