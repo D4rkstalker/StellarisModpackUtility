@@ -19,9 +19,12 @@ import glob
 
 # Write here your mod folder name
 # localModPath = "ADeadlyTempest"
-localModPath = "Decentralized Empires"
+# localModPath = "Decentralized Empires"
+localModPath = "starbasestrong"
 localizations = ["english", "german", "russian", "spanish", "braz_por", "french", "polish", "simp_chinese"]
-local_OVERHAUL = ["spanish", "braz_por", "french", "polish"]
+local_OVERHAUL = ["russian", "braz_por", "french", "polish", "simp_chinese"]
+print(localModPath)
+
 # localizations = ["english", "russian"]
 
 # def abort(message):
@@ -53,6 +56,10 @@ settingsPath = [
 ]
 
 settingsPath = [s for s in settingsPath if os.path.isfile(os.path.join(s, mods_registry))]
+# for s in settingsPath:
+# 	if os.path.isfile(os.path.join(s, mods_registry)):
+# 		settingsPath[0] = s
+# 		break
 print(settingsPath)
 
 if len(settingsPath):
@@ -76,7 +83,7 @@ def tr(s):
 	print(type(s),len(s))
 	if type(s) is bytes: s = s.decode('utf-8-sig')
 	# s = re.sub('\n', '\\n', s)
-	s = s.replace('\\n', 'BRR')
+	s = s.replace('\\r?\\n', 'BRR')
 	# s = s.replace("\"", '”')
 	s = s.replace("\'", '’')
 	# s = s.replace(":", '…')
