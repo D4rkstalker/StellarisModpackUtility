@@ -1,3 +1,8 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+## USAGE: You need install https://pyyaml.org/wiki/PyYAMLDocumentation for Python3.x
+## ATTENTION: You must customize the vars localModPath and local_OVERHAUL
+## TODO: Renaming (already translated) keys is not working
 import os
 import io
 import tkinter as tk
@@ -13,7 +18,14 @@ import glob
 # yaml=YAML(typ='safe')
 
 # Write here your mod folder name
-localModPath = "ADeadlyTempest"
+# localModPath = "ADeadlyTempest"
+# localModPath = "Decentralized Empires"
+localModPath = "starbasestrong"
+localizations = ["english", "german", "russian", "spanish", "braz_por", "french", "polish", "simp_chinese"]
+local_OVERHAUL = ["russian", "braz_por", "french", "polish", "simp_chinese"]
+print(localModPath)
+
+# localizations = ["english", "russian"]
 
 # def abort(message):
 # 	mBox('abort', message, 0)
@@ -33,7 +45,8 @@ def iBox(title, prefil, master):
 		parent=master)
 	return answer
 
-mods_registry = "mods_registry.json"
+# mods_registry = "mods_registry.json" # old launcher (changed in 2.7.2) 
+mods_registry = "settings.txt"
 
 # Check Stellaris settings location
 settingsPath = [
@@ -41,9 +54,13 @@ settingsPath = [
 	os.path.join(os.path.expanduser('~'), 'Documents', 'Paradox Interactive', 'Stellaris'),
 	os.path.join(os.path.expanduser('~'), '.local', 'share', 'Paradox Interactive', 'Stellaris')
 ]
-settingsPath = [s for s in settingsPath if os.path.isfile(
-	os.path.join(s, mods_registry))]
 
+settingsPath = [s for s in settingsPath if os.path.isfile(os.path.join(s, mods_registry))]
+# for s in settingsPath:
+# 	if os.path.isfile(os.path.join(s, mods_registry)):
+# 		settingsPath[0] = s
+# 		break
+print(settingsPath)
 
 if len(settingsPath):
 	settingsPath = settingsPath[0]
@@ -59,14 +76,17 @@ localModPath = os.path.join(settingsPath, "mod", localModPath, "localisation")
 
 os.chdir(localModPath)
 
-localizations = ["english", "german", "russian", "spanish", "braz_por", "french", "polish", "simp_chinese"]
-# localizations = ["english", "russian"]
+regRev1 =re.compile(r'^ +\"([^:"\s]+)\": ', re.MULTILINE)
+regRev2 = re.compile(r'(?:\'|([^:"]{2}))\'?$', re.MULTILINE)
 
 def tr(s):
 	print(type(s),len(s))
-	if type(s) is bytes: s = s.decode('utf-8')
+	if type(s) is bytes: s = s.decode('utf-8-sig')
 	# s = re.sub('\n', '\\n', s)
-	s = s.replace('\\n', 'BRR')
+	s = s.replace('\\r?\\n', 'BRR')
+	# s = s.replace("\"", '”')
+	s = s.replace("\'", '’')
+	# s = s.replace(":", '…')
 	# s = re.sub(r'\\n', '\\n', s)
 	return re.sub(r':[0-2] ', ': ', s)
 
@@ -74,11 +94,16 @@ def tr(s):
 def trReverse(s):
 	"Paradox workaround"
 	print(type(s))
-	if type(s) is bytes: s = s.decode('utf-8')
+	if type(s) is bytes: s = s.decode('utf-8-sig')
+	s = s.replace('\r\n', '\n') # Windows
 	s = s.replace('  ', ' ')
-	s = re.sub(re.compile(r'^ +(\S+:) \'?([^"])', re.MULTILINE), r' \g<1>0 "\2', s)
 	s = re.sub(r'BRR *', r'\\n', s)
-	s = re.sub(re.compile(r'(?:\'|([^:"]{2}))\'?$', re.MULTILINE), r'\1"', s)
+	s = re.sub(regRev1, r' \g<1>:0 ', s) # add 0 to keys
+	s = re.sub(re.compile(r'^"(l_\S+)":\n'), r'\1:\n', s)
+	# s = s.replace("”", "\"")
+	s = s.replace("’", "\'")
+	# s = s.replace("…", ':')
+	# s = re.sub(regRev2, r'\1"', s)
 	return s
 
 
@@ -89,7 +114,7 @@ def getYAMLstream(lang, filename):
 	lang = os.path.join(os.getcwd(), filename)
 	# print(lang)
 	if os.path.isfile(lang):
-		return io.open(lang, "rb") #, encoding='utf-8-sig'
+		return io.open(lang, "rb") # "rb" , encoding='utf-8-sig'
 
 
 def writeStream(lang, stream, filename):
@@ -105,7 +130,7 @@ def writeStream(lang, stream, filename):
 	lang = os.path.join(os.getcwd(), filename)
 	print(lang, os.path.isfile(lang))
 	# if not os.path.isfile(lang):
-	if type(stream) is bytes: stream = stream.decode('utf-8')
+	if type(stream) is bytes: stream = stream.decode('utf-8-sig')
 	with io.open(lang, 'w', encoding='utf-8-sig') as f:
 		f.write(stream)
 		# yaml.dump(stream, f, indent=1)
@@ -118,9 +143,9 @@ yaml.allow_unicode = True
 # if __name__ == '__main__':
 # yaml.warnings({'YAMLLoadWarning': False})
 
-#CrisisManagerEvent_l_english
-for filename in glob.iglob(os.path.join('english','*.yml'), recursive=False):
-	# print(filename)
+#CrisisManagerEvent_l_english ,'**'
+for filename in glob.iglob(os.path.join('english', '*.yml'), recursive=False):
+	print(filename)
 	streamEn = getYAMLstream(localizations[0], filename)
 	streamEn = streamEn.read()
 	# print(streamEn)
@@ -158,18 +183,28 @@ for filename in glob.iglob(os.path.join('english','*.yml'), recursive=False):
 		# print("Str document:", type(langStream), langStream)
 		# langStream = yaml.load(langStream, Loader=yaml.FullLoader)
 		langStream = yaml.safe_load(langStream)
+
+		if not "l_"+lang in langStream:
+			print("FAIL on file", filename.replace("english", lang), langStream)
+			continue
 		langDict = langStream["l_"+lang]
 		#print("Dict document:", type(langStream), langStream)
 
 		# for _, doc in dictionary.items():
 		if type(doc) is dict and type(langDict) is dict:
 			for key, value in doc.items():
-				if key not in langDict:
+				# print(key, value)
+				if key not in langDict or (lang in local_OVERHAUL and langDict[key] != value):
 					langDict[key] = value
 					changed = True
-					print("Fixed document " + filename.replace("english", lang), key)
+					print("Fixed document " + filename.replace("english", lang), key, value)
 					# break
 				# else: print(bytes(key + ":0 " + langDict[key], "utf-8").decode("utf-8"))
+			for key in list(langDict.keys()):
+				if key not in doc:
+					del langDict[key]
+					changed = True
+					print(key, "removed from document " + filename.replace("english", lang))
 
 		if changed:
 			# dictionary = doc.copy()
@@ -177,7 +212,7 @@ for filename in glob.iglob(os.path.join('english','*.yml'), recursive=False):
 			# langStream["l_"+lang] = dictionary
 			langStream["l_"+lang] = langDict
 			# print(type(langStream), langStream)
-			langStream = yaml.dump(langStream, width=10000, allow_unicode=True, indent=1) # , encoding='utf-8'
+			langStream = yaml.dump(langStream, width=10000, allow_unicode=True, indent=1, default_style='"') # , encoding='utf-8'
 			langStream = trReverse(langStream)
 			# print(type(langStream), langStream.encode("utf-8"))
 			writeStream(lang, langStream, filename)
