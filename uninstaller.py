@@ -2,8 +2,8 @@ import os
 import glob
 from shutil import copy2
 import filecmp
-
-MOD_TO_REMOVE = "customdifficultymm"
+#TheSleeperFallenHiveEmpire
+MOD_TO_REMOVE = "EventHorizonOffsetFacility"
 
 modFiles = glob.glob('mod/'+MOD_TO_REMOVE +'/**',recursive=True)
 conflictingFiles = []

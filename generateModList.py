@@ -98,7 +98,7 @@ def genModList(STEAM_PATH):
 
 	files = _getFiles(STEAM_PATH)
 	# print(type(files),len(files),*files, sep="\n")
-	outlist = open(os.path.join(settingPath, 'list.txt'),'w+')
+	outlist = open('list.txt','w+')
 	out = []
 		
 	for f in files:
@@ -132,20 +132,20 @@ def genModList(STEAM_PATH):
 			outlist.write("%s\n" % item)
 		# outlist.write(json.dumps(out))
 		outlist.close()
-		whitelist = open(os.path.join(settingPath, 'whitelist.txt'),'w+')
+		#whitelist = open(os.path.join(settingPath, 'whitelist.txt'),'w+')
 
 
-if len(settingPath) > 0:
-	settingPath = settingPath[0]
+if True:
+	#settingPath = settingPath[0]
 	# print('Find Stellaris setting at %s' % settingPath)
-	try:
+	# try:
 		# run(settingPath)
 		genModList(STEAM_PATH)
 		mBox('', 'done')
 
-	except Exception as e:
-		print(errorMesssage(e))
-		mBox('error', errorMesssage(e))
+	# except Exception as e:
+	# 	print(errorMesssage(e))
+		#mBox('error', errorMesssage(e))
 else:
 	mBox('error', 'unable to locate "%s"' % mods_registry)
 

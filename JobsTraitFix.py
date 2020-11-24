@@ -24,12 +24,14 @@ def jobs(files):
         out_file = os.path.join(out_dir, os.path.basename(file))
         with open(file, 'r') as f:
             text = f.read()
+        if "trait_just-more-traits_robot_robosexuals" not in text:
 
-        text = re.sub('\t*\n', '\n', text)
-        text = re.sub(' *\n', '\n', text)
-        jobs = re.findall(r'\w*? = {.*?\n}', text, re.DOTALL)
-        with open(out_file, 'w') as f:
-            for job in jobs:
+            text = re.sub('\t*\n', '\n', text)
+            text = re.sub(' *\n', '\n', text)
+            jobs = re.findall(r'\w*? = {.*?\n}', text, re.DOTALL)
+            with open(out_file, 'w') as f:
+                for job in jobs:
+                    #f.write("#PATCHED: Job traits\n")
                     #try:
                         #Job selection fix 
                     lines = str(job).split("\n")
@@ -67,7 +69,9 @@ def jobs(files):
                         
                     # except Exception as e: 
                     #     print(e)
-               
+        else:
+            print("patch already applied to " + file + "!, skipping")
+                
 
 def parse_dir():
     global out_dir, files

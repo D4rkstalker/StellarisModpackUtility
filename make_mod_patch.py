@@ -46,29 +46,33 @@ def mod_patch(modpack_name, add_to_whitelist=True, check_only=False):
                 # The cur_file might be a conflict or maybe a duplicate.
                 # Either way, no checking is necessary, so go to the next file.
                 continue
-            if compare(cur_file, os.sep.join(file_path)):
-                # The first mod on the whitelist that has this file has an identical file to the file in the modpack.
-                # This means no customization has been made, and nothing need be done.
-                fileSet.add(path_within_mod)
-            else:
-                # This file has been altered.
-                if check_only:
-                    changes_present = True
-                    if path_within_mod not in changeSet:
-                        print(f"File in modpack differs from file in mod: {os.sep.join(cur_file.split(os.sep)[1:])}")
-                    changeSet.add(path_within_mod)
-                    continue  # Advance to next file without any copying.
-                # Copy the file to the patch folder.
-                print(f"Adding customized file to patch: {path_within_mod}")
-                patch_created = True
-                fileSet.add(path_within_mod)
-                modified_file = os.sep.join(file_path)
-                file_path[1] = patch_name  # Change folder to the patch.
-                target_path = os.sep.join(file_path)
-                target_dir = os.path.dirname(target_path)
-                if not os.path.exists(target_dir):
-                    os.makedirs(target_dir)
-                copy2(modified_file, target_path)
+            try:
+                if compare(cur_file, os.sep.join(file_path)):
+                    # The first mod on the whitelist that has this file has an identical file to the file in the modpack.
+                    # This means no customization has been made, and nothing need be done.
+                    fileSet.add(path_within_mod)
+                else:
+                    # This file has been altered.
+                    if check_only:
+                        changes_present = True
+                        if path_within_mod not in changeSet:
+                            print(f"File in modpack differs from file in mod: {os.sep.join(cur_file.split(os.sep)[1:])}")
+                        changeSet.add(path_within_mod)
+                        continue  # Advance to next file without any copying.
+                    # Copy the file to the patch folder.
+                    print(f"Adding customized file to patch: {path_within_mod}")
+                    patch_created = True
+                    fileSet.add(path_within_mod)
+                    modified_file = os.sep.join(file_path)
+                    file_path[1] = patch_name  # Change folder to the patch.
+                    target_path = os.sep.join(file_path)
+                    target_dir = os.path.dirname(target_path)
+                    if not os.path.exists(target_dir):
+                        os.makedirs(target_dir)
+                    copy2(modified_file, target_path)
+            except Exception as e:
+                print(cur_file)
+                print(e)
 
     # Check the modpack for unique files that are not present in any of the mods on the whitelist.
     all_mod_files = glob.glob(f'mod{os.sep}{modpack_name}{os.sep}**', recursive=True)

@@ -16,63 +16,66 @@ def jobs(files):
             text = f.read()
         targets = ["physics_research","society_research","engineering_research","unity","alloys","minerals","energy","consumer_goods","food","volatile_motes","exotic_gases","rare_crystals"]
         specialTargets = ["amenities","trade_value","defense_armies"]
-
-        text = re.sub('\t*\n', '\n', text)
-        text = re.sub(' *\n', '\n', text)
-        things = re.findall(r'\w*? = {.*?\n}', text, re.DOTALL)
-        with open(out_file, 'w') as f:
-            for thing in things:
-                text = ""
-                for line in thing.split("\n"):
-                    if "#" in line:
-                        line = line.split("#")[0]
-                    text += line + "\n"
-                thing = text
-                #print(thing)
-                try:
-                    jobTypes = []
-                    #Job selection fix 
-                    lines = str(thing).split("\n")
-                    layers = 0
-                    produces = False
-                    for line in lines:
-                        if "{" in line:
-                            #print(nextLine + "+")
-                            layers +=1
-                        if "}" in line:
-                            layers -=1
-                            #print(nextLine + "-")
-                        if layers == 2:
-                            produces = False
-                        #print(line + str(layers))
-                        # if "resources" in nextLine and layers ==2:
-                        #     nextLine = lines[i + index]
+        if "#PATCHED: Job priority" not in text:
+            text = re.sub('\t*\n', '\n', text)
+            text = re.sub(' *\n', '\n', text)
+            things = re.findall(r'\w*? = {.*?\n}', text, re.DOTALL)
+            with open(out_file, 'w') as f:
+                f.write("#PATCHED: Job priority\n")
+                for thing in things:
+                    text = ""
+                    for line in thing.split("\n"):
+                        if "#" in line:
+                            line = line.split("#")[0]
+                        text += line + "\n"
+                    thing = text
+                    #print(thing)
+                    try:
+                        jobTypes = []
+                        #Job selection fix 
+                        lines = str(thing).split("\n")
+                        layers = 0
+                        produces = False
+                        for line in lines:
+                            if "{" in line:
+                                #print(nextLine + "+")
+                                layers +=1
+                            if "}" in line:
+                                layers -=1
+                                #print(nextLine + "-")
+                            if layers == 2:
+                                produces = False
+                            #print(line + str(layers))
+                            # if "resources" in nextLine and layers ==2:
+                            #     nextLine = lines[i + index]
+                                
+                            if "produces" in line and layers == 3:
+                                produces = True
                             
-                        if "produces" in line and layers == 3:
-                            produces = True
+                            if layers == 3 and produces: 
+                                for target in targets:
+                                    if target in line:
+                                        jobTypes.append(target)
+                            if "weight = {" in line:
+                                for target in specialTargets:
+                                    if target in thing:
+                                        jobTypes.append(target)
+                                jobTypes = list(dict.fromkeys(jobTypes))
+                                modifiers = ["weight = {\n"]
+                                for jobType in jobTypes:
+                                    modifiers.append('\t\tmodifier = {{ \n\t\t\tfactor = 50 \n\t\t\thas_trait = trait_priority_{}\n\t\t\t}}\n'.format(jobType))
+                                    modifiers.append('\t\tmodifier = {{ \n\t\t\tfactor = 0.1 \n\t\t\thas_trait = trait_negative_priority_{}\n\t\t\t}}\n'.format(jobType))
+                                if "trait_priority_" not in thing and "trait_negative_priority_" not in thing:
+                                    line = line.replace('weight = {',''.join(modifiers), 1)                                
+                                #print(modifiers)
+                            
+                            f.write(line)
+                            f.write("\n")
                         
-                        if layers == 3 and produces: 
-                            for target in targets:
-                                if target in line:
-                                    jobTypes.append(target)
-                        if "weight = {" in line:
-                            for target in specialTargets:
-                                if target in thing:
-                                    jobTypes.append(target)
-                            jobTypes = list(dict.fromkeys(jobTypes))
-                            modifiers = ["weight = {\n"]
-                            for jobType in jobTypes:
-                                modifiers.append('\t\tmodifier = {{ \n\t\t\tfactor = 50 \n\t\t\thas_trait = trait_priority_{}\n\t\t\t}}\n'.format(jobType))
-                                modifiers.append('\t\tmodifier = {{ \n\t\t\tfactor = 0.1 \n\t\t\thas_trait = trait_negative_priority_{}\n\t\t\t}}\n'.format(jobType))
-                            if "trait_priority_" not in thing and "trait_negative_priority_" not in thing:
-                                line = line.replace('weight = {',''.join(modifiers), 1)                                
-                            #print(modifiers)
-                        
-                        f.write(line)
-                        f.write("\n")
-                    
-                except Exception as e: 
-                    print(e)
+                    except Exception as e: 
+                        print(e)
+        else:
+            print("patch already applied to " + file + "!, skipping")
 
 
 def parse_dir():

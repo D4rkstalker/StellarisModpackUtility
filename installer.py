@@ -35,7 +35,7 @@ def make_modpack(modpack_name, overwrite):
         print("Continuing to assemble modpack...\n")
 
     for entry in whitelist:
-        fileList = glob.glob(f'mod{os.sep}{entry}{os.sep}**', recursive=True)
+        fileList = glob.glob(f'mod{os.sep}{entry}{os.sep}interface{os.sep}**', recursive=True)
         for cur_file in fileList:
             if not os.path.isfile(cur_file) or ".mod" in cur_file:
                 continue  # Skip directory the folders themselves and mod descriptor files.
@@ -53,7 +53,7 @@ def make_modpack(modpack_name, overwrite):
                 fileIndex[path_within_mod][1] += 1
                 file_path[1] = f"{modpack_name}_conflicts!"  # Copy the conflicting file to the conflicts folder.
                 fname, extension = file_path[-1].split('.')
-                file_path[-1] = fname + extension + " " + entry.strip() + "." +  extension
+                file_path[-1] = fname + "." + extension + " " + entry.strip() + "." +  extension
                 print(f"Confict detected. Moving to {os.sep.join(file_path[1:])}.")
             else:
                 # First time we've seen a file at this path.
