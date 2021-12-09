@@ -6,8 +6,11 @@ print("String to search: ")
 THING_TO_SEARCH = input()
 # print("Directory to search: ")
 # DIRECTORY_TO_SEARCH = input()
-
-modFiles = glob.glob('mod\\\! Modpack\\events\\**',recursive=True)
+modFiles = []
+# modFiles += glob.glob('mod\\\! Modpack\\localisation\\english\\**',recursive=True)
+modFiles += glob.glob('mod\\\! Modpack\\common\\**',recursive=True)
+modFiles += glob.glob('mod\\\! Modpack\\events\\**',recursive=True)
+# modFiles += glob.glob('mod\\\! Modpack 2.8\\localisation\\english\\**',recursive=True)
 for _file in modFiles: 
 	if os.path.isfile(_file) and ".txt" in _file:
 		try:

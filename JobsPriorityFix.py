@@ -16,17 +16,26 @@ def jobs(files):
             text = f.read()
         targets = ["physics_research","society_research","engineering_research","unity","alloys","minerals","energy","consumer_goods","food","volatile_motes","exotic_gases","rare_crystals"]
         specialTargets = ["amenities","trade_value","defense_armies"]
-        if "#PATCHED: Job priority" not in text:
+        if "@Job_Priority_Patched = 1" not in text:
             text = re.sub('\t*\n', '\n', text)
             text = re.sub(' *\n', '\n', text)
-            things = re.findall(r'\w*? = {.*?\n}', text, re.DOTALL)
+            
             with open(out_file, 'w') as f:
-                f.write("#PATCHED: Job priority\n")
+                f.write("@Job_Priority_Patched = 1\n")
+                firstPass = ""
+                started = False
+                for line in text.split("\n"):
+                    if "#" in line:
+                        line = line.split("#")[0]
+                    if "{" in line:
+                        started = True
+                    if "@" in line and not started :
+                        o.write(line + "\n")
+                    firstPass += line + "\n"
+                things = re.findall(r'\w*? = {.*?\n}', firstPass, re.DOTALL)
                 for thing in things:
                     text = ""
                     for line in thing.split("\n"):
-                        if "#" in line:
-                            line = line.split("#")[0]
                         text += line + "\n"
                     thing = text
                     #print(thing)

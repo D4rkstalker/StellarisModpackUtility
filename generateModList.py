@@ -8,6 +8,7 @@ from pathlib import Path
 import tkinter as tk
 from tkinter import messagebox 
 import traceback
+import emoji
 
 mods_registry =  'mods_registry.json'
 modList = [] # The modId order (game, which is in reverse to hashList)
@@ -122,6 +123,7 @@ def genModList(STEAM_PATH):
 				name = re.search(r'^name\s*=\s*\"?([^"]+)\"?$', line)
 				name = name and name.group(1) or None
 				if name:
+					name = ''.join(e for e in name if e.isalnum())
 					print(name, file.name)
 					out.append(name.replace(".mod",""))
 					break
@@ -129,7 +131,13 @@ def genModList(STEAM_PATH):
 	if len(out):
 		out.sort()
 		for item in out:
-			outlist.write("%s\n" % item)
+			try: 
+				outlist.write("%s\n" % item)
+			except: 
+				print("-----ERRORED-----")
+				print(item)
+				print("-----------------")
+			
 		# outlist.write(json.dumps(out))
 		outlist.close()
 		#whitelist = open(os.path.join(settingPath, 'whitelist.txt'),'w+')

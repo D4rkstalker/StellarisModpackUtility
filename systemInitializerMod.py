@@ -36,6 +36,8 @@ def ModSystems():
             unique = False
             spawnChance = False
             base = False
+            if "usage_odds = {" in system:
+                print(file)
             if "max_instances = 1\n" in system:
                 unique = True
             if "spawn_chance = " in system:

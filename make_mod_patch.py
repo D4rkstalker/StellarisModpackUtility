@@ -17,6 +17,7 @@
 
 import os
 import glob
+from os.path import isfile
 
 from shutil import copy2
 from filecmp import cmp as compare
@@ -26,53 +27,66 @@ from argparse import ArgumentParser
 def mod_patch(modpack_name, add_to_whitelist=True, check_only=False):
     changes_present = False
     changeSet = set()
-    patch_name = ''.join(char for char in modpack_name if char.isalnum()) + "Patch"
+    patch_name = modpack_name + "Patch"
     print(f"\nChecking for customizations in {modpack_name}...\n")
     fileSet = {"duplicateFilesList.txt", "allFilesList.txt", "whitelist.txt"}  # To avoid copying these meta lists to the patch folder.
     patch_created = False
-    whitelist = open(f'mod{os.sep}{modpack_name}{os.sep}whitelist.txt').read().split("\n")
     # Keep only the alphanumeric characters in the names in the whitelist, remove blank lines:
-    whitelist = [''.join(char for char in list_entry if char.isalnum()) for list_entry in whitelist if list_entry]
-    for entry in whitelist:
-        fileList = glob.glob(f'mod{os.sep}{entry}{os.sep}**', recursive=True)
-        for cur_file in fileList:
-            if not os.path.isfile(cur_file) or ".mod" in cur_file:
-                continue  # Skip directory the folders themselves and mod descriptor files.
-            file_path = cur_file.split(os.sep)
-            file_path[1] = modpack_name  # Change folder to the modpack.
-            path_within_mod = os.sep.join(file_path[2:])
-            if path_within_mod in fileSet:
-                # A file with this path has already been compared.
-                # The cur_file might be a conflict or maybe a duplicate.
-                # Either way, no checking is necessary, so go to the next file.
-                continue
-            try:
-                if compare(cur_file, os.sep.join(file_path)):
-                    # The first mod on the whitelist that has this file has an identical file to the file in the modpack.
-                    # This means no customization has been made, and nothing need be done.
-                    fileSet.add(path_within_mod)
-                else:
-                    # This file has been altered.
-                    if check_only:
-                        changes_present = True
-                        if path_within_mod not in changeSet:
-                            print(f"File in modpack differs from file in mod: {os.sep.join(cur_file.split(os.sep)[1:])}")
-                        changeSet.add(path_within_mod)
-                        continue  # Advance to next file without any copying.
-                    # Copy the file to the patch folder.
-                    print(f"Adding customized file to patch: {path_within_mod}")
-                    patch_created = True
-                    fileSet.add(path_within_mod)
-                    modified_file = os.sep.join(file_path)
-                    file_path[1] = patch_name  # Change folder to the patch.
-                    target_path = os.sep.join(file_path)
-                    target_dir = os.path.dirname(target_path)
-                    if not os.path.exists(target_dir):
-                        os.makedirs(target_dir)
-                    copy2(modified_file, target_path)
-            except Exception as e:
-                print(cur_file)
-                print(e)
+    fileList = glob.glob('mod\\! Modpack Baseline\\**', recursive=True)
+    for cur_file in fileList:
+        if not os.path.isfile(cur_file) or ".mod" in cur_file:
+            continue  # Skip directory the folders themselves and mod descriptor files.
+        file_path = cur_file.split(os.sep)
+        file_path[0] = "mod"  # Change folder to the modpack.
+        file_path[1] = modpack_name  # Change folder to the modpack.
+        path_within_mod = os.sep.join(file_path[2:])
+        if path_within_mod in fileSet:
+            # A file with this path has already been compared.
+            # The cur_file might be a conflict or maybe a duplicate.
+            # Either way, no checking is necessary, so go to the next file.
+            continue
+        try:
+            if not isfile(os.sep.join(file_path)):
+                with open(os.sep.join(file_path),"w+") as f:
+                    f.write("#Overriden")
+            #print(cur_file)
+            #print(file_path)
+            if compare(cur_file, os.sep.join(file_path)):
+                # The first mod on the whitelist that has this file has an identical file to the file in the modpack.
+                # This means no customization has been made, and nothing need be done.
+                fileSet.add(path_within_mod)
+            else:
+                # This file has been altered.
+                if check_only:
+                    changes_present = True
+                    if path_within_mod not in changeSet:
+                        print(f"File in modpack differs from file in mod: {os.sep.join(cur_file.split(os.sep)[1:])}")
+                    changeSet.add(path_within_mod)
+                    continue  # Advance to next file without any copying.
+                # Copy the file to the patch folder.
+                print(f"Adding customized file to patch: {path_within_mod}")
+                patch_created = True
+                fileSet.add(path_within_mod)
+                modified_file = os.sep.join(file_path)
+                file_path[1] = patch_name  # Change folder to the patch.
+                target_path = os.sep.join(file_path)
+                target_dir = os.path.dirname(target_path)
+                if not os.path.exists(target_dir):
+                    os.makedirs(target_dir)
+                copy2(modified_file, target_path)
+        except Exception as e:
+            print(cur_file)
+            print(e)
+            print(f"Adding customized file to patch: {path_within_mod}")
+            patch_created = True
+            fileSet.add(path_within_mod)
+            modified_file = os.sep.join(file_path)
+            file_path[1] = patch_name  # Change folder to the patch.
+            target_path = os.sep.join(file_path)
+            target_dir = os.path.dirname(target_path)
+            if not os.path.exists(target_dir):
+                os.makedirs(target_dir)
+            copy2(modified_file, target_path)
 
     # Check the modpack for unique files that are not present in any of the mods on the whitelist.
     all_mod_files = glob.glob(f'mod{os.sep}{modpack_name}{os.sep}**', recursive=True)
@@ -105,21 +119,10 @@ def mod_patch(modpack_name, add_to_whitelist=True, check_only=False):
             return True
         return False  # Done checking for new changes - there were none!
 
-    if add_to_whitelist:
-        if patch_name not in whitelist:
-            whitelist.insert(0, patch_name)
-            with open(f"mod{os.sep}{modpack_name}{os.sep}whitelist.txt", "w+") as f:
-                f.writelines([i +'\n' for i in whitelist])
-        whitelist = open(f'whitelist.txt').read().split("\n")
-        if patch_name not in whitelist:
-            whitelist.insert(0, patch_name)
-            with open("whitelist.txt", "w+") as f:
-                f.writelines([i +'\n' for i in whitelist])
-
     if patch_created:
         if not os.path.isfile(f"mod{os.sep}{patch_name}.mod"):
             with open(f"mod{os.sep}{patch_name}.mod", "w+") as f:
-                f.writelines([f"name=\"{patch_name}\"\n", f"path=\"mod{os.sep}{patch_name}\"\n", "tags={\n", "\t\"Gameplay\"\n", "}\n", "supported_version=\"2.7.*\"\n"])
+                f.writelines([f"name=\"{patch_name}\"\n", f"path=\"mod{os.sep}{patch_name}\"\n", "tags={\n", "\t\"Gameplay\"\n", "}\n", "supported_version=\"3.*.*\"\n"])
         print(f"\n\nCustomized files in \"{modpack_name}\" have been copied to \"{patch_name}\".{' The patch has been added to your whitelist.' if add_to_whitelist else ''}\n")
     else:
         print(f"\n\nNo customized files found in \"{modpack_name}\". No patch created.\n")

@@ -26,8 +26,8 @@ def ModDeposits():
                     out.append(line + "\n")
                 text += line + "\n"
             #print(text)
-            if "#PATCH: Orbital deposit boost" not in text:
-                out.append("#PATCH: Orbital deposit boost\n")
+            if "@Orbital_deposit_boosted = 1" not in text:
+                out.append("@Orbital_deposit_boosted = 1\n")
                 text = re.sub('\t*\n', '\n', text)
                 text = re.sub(' *\n', '\n', text)
                 #text = re.sub('{ ', '{\n', text)

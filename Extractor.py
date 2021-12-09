@@ -104,8 +104,9 @@ def run(settingPath):
 			except Exception as e: 
 				print(e, " Using utf-8 charset", d)
 				descriptor = d.open(encoding="utf-8").read()
+			descriptor = ''.join(e for e in descriptor if e.isalnum())
 			entry = whiteList[i]
-			if "name=\"" + entry + "\"" in descriptor:
+			if entry in descriptor:
 				outDir = os.path.join(settingPath, 'mod', ''.join(e for e in entry if e.isalnum()))
 				print("Copying", entry)
 				whiteList.remove(entry)
@@ -133,6 +134,7 @@ if len(settingPath) > 0:
 else:
 	mBox('error', 'unable to locate the settings path.')
 
+input()
 
 
 
